@@ -3,7 +3,22 @@ terraform {
     hostname = "app.terraform.io"
 
     workspaces {
-      # TODO: name = "workspacename"
+      name = "mischebot"
+    }
+  }
+
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+    }
+
+    cloudflare = {
+      source = "terraform-providers/cloudflare"
+    }
+
+    telegram = {
+      source  = "inhouse.local/local/telegram"
+      version = "0.2.0"
     }
   }
 }
