@@ -12,7 +12,8 @@ resource "aws_lambda_function" "handle_update" {
 
   environment {
     variables = {
-      TELEGRAM_TOKEN = var.telegram_token
+      TELEGRAM_TOKEN = var.telegram_token,
+      TARGET_HOUR = var.target_hour
     }
   }
 }

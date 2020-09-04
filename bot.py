@@ -10,6 +10,7 @@ import requests
 
 _bot_token = os.getenv('TELEGRAM_TOKEN')
 _CHAT_ID = "-1001433106001"
+_TARGET_HOUR = int(os.getenv("TARGET_HOUR"))
 
 
 def _handle_poll(poll) -> Optional[dict]:
@@ -40,7 +41,7 @@ def _get_day() -> str:
 def _is_hammer_time() -> bool:
     time = _get_local_time()
     print(f"The hour is: {time.hour}")
-    return time.hour == 8
+    return time.hour == _TARGET_HOUR
 
 
 def handle_update(event, context):

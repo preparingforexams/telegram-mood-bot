@@ -1,6 +1,8 @@
+
+
 resource "aws_cloudwatch_event_rule" "daily1" {
   name                = "${var.bot_name}-daily1"
-  schedule_expression = "cron(1 6 * * ? *)"
+  schedule_expression = "cron(1 ${var.target_hour - 2} * * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "reminder1" {
@@ -17,7 +19,7 @@ resource "aws_lambda_permission" "invoke_reminder1" {
 
 resource "aws_cloudwatch_event_rule" "daily2" {
   name                = "${var.bot_name}-daily2"
-  schedule_expression = "cron(1 7 * * ? *)"
+  schedule_expression = "cron(1 ${var.target_hour - 1} * * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "reminder2" {
