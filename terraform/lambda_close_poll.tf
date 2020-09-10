@@ -1,8 +1,8 @@
-resource "aws_lambda_function" "handle_poll_trigger" {
-  function_name = "${var.bot_name}-handle_poll_trigger"
+resource "aws_lambda_function" "handle_close_trigger" {
+  function_name = "${var.bot_name}-handle_close_trigger"
   role          = aws_iam_role.lambda_role.arn
   runtime       = "python3.8"
-  handler       = "bot.handle_poll_trigger"
+  handler       = "bot.handle_close_trigger"
   timeout       = 30
 
   filename         = "../code.zip"
