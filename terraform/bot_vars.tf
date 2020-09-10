@@ -7,6 +7,6 @@ variable "telegram_token" {
 }
 
 variable "target_hour" {
-  type = number
+  type    = number
   default = 13
 }

@@ -44,11 +44,12 @@ def _is_hammer_time() -> bool:
     return time.hour == _TARGET_HOUR
 
 
-def handle_update(event, context):
-    poll = event.get('poll')
-    if poll:
-        return _handle_poll(poll)
-    elif _is_hammer_time():
+def handle_update(update, context):
+    return _handle_poll(update['poll'])
+
+
+def handle_poll_trigger(event, context):
+    if _is_hammer_time():
         _create_poll()
 
 
