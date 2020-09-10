@@ -1,10 +1,8 @@
-import json
 import locale
 import os
 from datetime import datetime
 from typing import Optional
 
-import boto3
 import pytz
 import requests
 
@@ -51,15 +49,6 @@ def handle_update(update, context):
 def handle_poll_trigger(event, context):
     if _is_hammer_time():
         _create_poll()
-
-
-def _invoke_lambda(lambda_name: str, args: dict):
-    lamb = boto3.client('lambda')
-    return lamb.invoke(
-        FunctionName=lambda_name,
-        InvocationType='Event',
-        Payload=json.dumps(args)
-    )
 
 
 def _request_url(method: str):
