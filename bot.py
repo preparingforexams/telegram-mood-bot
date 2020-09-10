@@ -10,6 +10,7 @@ import requests
 
 _bot_token = os.getenv('TELEGRAM_TOKEN')
 _CHAT_ID = "-1001433106001"
+# _CHAT_ID = "133399998"
 _TARGET_HOUR = int(os.getenv("TARGET_HOUR"))
 _TABLE_NAME = os.getenv("TABLE_NAME")
 
@@ -28,7 +29,8 @@ def _create_poll(chat_id=_CHAT_ID) -> str:
     response = requests.post(_request_url("sendPoll"), json=data)
     print(f"Response code: {response.status_code}")
     message = response.json()
-    return message['message_id']
+    print(json.dumps(message))
+    return message['result']['message_id']
 
 
 def _get_local_time() -> datetime:
