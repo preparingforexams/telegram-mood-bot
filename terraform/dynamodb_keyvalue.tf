@@ -6,10 +6,31 @@ resource aws_dynamodb_table "keyvalue" {
     name = "key"
     type = "S"
   }
-  #   attribute {
-  #     name = "value"
-  #     type = "S"
-  #   }
+}
+
+resource aws_dynamodb_table "results" {
+  name         = "${var.bot_name}-results"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "poll_id"
+  range_key    = "time"
+  attribute {
+    name = "poll_id"
+    type = "S"
+  }
+  attribute {
+    name = "time"
+    type = "N"
+  }
+}
+
+resource aws_dynamodb_table "users" {
+  name         = "${var.bot_name}-users"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "user_id"
+  attribute {
+    name = "user_id"
+    type = "S"
+  }
 }
 
 data "aws_iam_policy_document" "access_dynamodb" {
@@ -21,7 +42,9 @@ data "aws_iam_policy_document" "access_dynamodb" {
       "dynamodb:UpdateItem"
     ]
     resources = [
-      aws_dynamodb_table.keyvalue.arn
+      aws_dynamodb_table.keyvalue.arn,
+      aws_dynamodb_table.results.arn,
+      aws_dynamodb_table.users.arn
     ]
   }
 }
