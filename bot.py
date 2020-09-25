@@ -9,8 +9,8 @@ import pytz
 import requests
 
 _bot_token = os.getenv('TELEGRAM_TOKEN')
-# _CHAT_ID = "-1001433106001"
-_CHAT_ID = "133399998"
+_CHAT_ID = "-1001433106001"
+# _CHAT_ID = "133399998"
 _TARGET_HOUR = int(os.getenv("TARGET_HOUR"))
 _KV_TABLE_NAME = os.getenv("TABLE_NAME")
 _USER_TABLE_NAME = os.getenv("USER_TABLE_NAME")
