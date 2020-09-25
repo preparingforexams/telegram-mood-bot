@@ -2,21 +2,114 @@ import json
 import locale
 import os
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 import boto3
 import pytz
 import requests
 
 _bot_token = os.getenv('TELEGRAM_TOKEN')
-_CHAT_ID = "-1001433106001"
-# _CHAT_ID = "133399998"
+# _CHAT_ID = "-1001433106001"
+_CHAT_ID = "133399998"
 _TARGET_HOUR = int(os.getenv("TARGET_HOUR"))
-_TABLE_NAME = os.getenv("TABLE_NAME")
+_KV_TABLE_NAME = os.getenv("TABLE_NAME")
+_USER_TABLE_NAME = os.getenv("USER_TABLE_NAME")
+_RESULT_TABLE_NAME = os.getenv("RESULT_TABLE_NAME")
 
 
 def _handle_poll(poll) -> Optional[dict]:
     pass
+
+
+def _handle_poll_answer(poll_answer: dict) -> Optional[dict]:
+    user = poll_answer['user']
+    user_id = str(user['id'])
+    poll_id = poll_answer['poll_id']
+    if not _get_user(user_id):
+        _update_user(user)
+    option_ids: List[int] = poll_answer['option_ids']
+    if option_ids:
+        option = option_ids[0]
+        _update_result(poll_id, user_id, option)
+    else:
+        _delete_result(poll_id, user_id)
+
+
+def _delete_result(poll_id: str, user_id: str):
+    dynamodb = boto3.client('dynamodb')
+    print(f"Deleting {poll_id}-{user_id}")
+    response = dynamodb.delete_item(
+        TableName=_RESULT_TABLE_NAME,
+        Key={
+            'poll_id': {
+                'S': poll_id
+            },
+            'user_id': {
+                'S': user_id
+            }
+        }
+    )
+
+
+def _today() -> str:
+    today = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+    return str(int(today.timestamp()))
+
+
+def _update_result(poll_id, user_id, option: int):
+    dynamodb = boto3.client('dynamodb')
+    response = dynamodb.put_item(
+        TableName=_RESULT_TABLE_NAME,
+        Item={
+            'poll_id': {
+                'S': poll_id
+            },
+            'user_id': {
+                'S': user_id
+            },
+            'time': {
+                'N': _today()
+            },
+            'option': {
+                'N': str(option)
+            }
+        }
+    )
+
+
+def _get_user(user_id: str) -> Optional[dict]:
+    dynamodb = boto3.client('dynamodb')
+    response = dynamodb.get_item(
+        TableName=_USER_TABLE_NAME,
+        Key={
+            'user_id': {
+                'S': user_id
+            }
+        }
+    )
+    item = response.get('Item')
+    if not item:
+        return None
+    else:
+        return {
+            'id': user_id,
+            'first_name': item['first_name']
+        }
+
+
+def _update_user(user: dict):
+    dynamodb = boto3.client('dynamodb')
+    response = dynamodb.put_item(
+        TableName=_USER_TABLE_NAME,
+        Item={
+            'user_id': {
+                'S': str(user['id'])
+            },
+            'first_name': {
+                'S': user['first_name']
+            }
+        }
+    )
 
 
 def _create_poll(chat_id=_CHAT_ID) -> str:
@@ -50,8 +143,11 @@ def _is_hammer_time() -> bool:
     return time.hour == _TARGET_HOUR
 
 
-def handle_update(update, context):
-    return _handle_poll(update['poll'])
+def handle_update(update, context) -> Optional[dict]:
+    if 'poll_answer' in update:
+        return _handle_poll_answer(update['poll_answer'])
+    else:
+        return _handle_poll(update['poll'])
 
 
 def handle_poll_trigger(event, context):
@@ -77,7 +173,7 @@ def _close_poll(message_id: str):
 def _get_last_poll_id() -> Optional[str]:
     dynamodb = boto3.client('dynamodb')
     response = dynamodb.get_item(
-        TableName=_TABLE_NAME,
+        TableName=_KV_TABLE_NAME,
         Key={
             'key': {
                 'S': 'last_poll_id'
@@ -92,7 +188,7 @@ def _get_last_poll_id() -> Optional[str]:
 def _set_last_poll_id(poll_id):
     dynamodb = boto3.client('dynamodb')
     response = dynamodb.put_item(
-        TableName=_TABLE_NAME,
+        TableName=_KV_TABLE_NAME,
         Item={
             'key': {
                 'S': 'last_poll_id'

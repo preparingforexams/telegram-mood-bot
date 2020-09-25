@@ -12,8 +12,10 @@ resource "aws_lambda_function" "handle_update" {
 
   environment {
     variables = {
-      TELEGRAM_TOKEN = var.telegram_token,
-      TARGET_HOUR    = var.target_hour
+      TELEGRAM_TOKEN    = var.telegram_token,
+      TARGET_HOUR       = var.target_hour,
+      RESULT_TABLE_NAME = aws_dynamodb_table.results.name,
+      USER_TABLE_NAME   = aws_dynamodb_table.users.name
     }
   }
 }

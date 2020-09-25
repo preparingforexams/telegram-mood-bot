@@ -12,14 +12,25 @@ resource aws_dynamodb_table "results" {
   name         = "${var.bot_name}-results"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "poll_id"
-  range_key    = "time"
+  range_key    = "user_id"
+
   attribute {
     name = "poll_id"
     type = "S"
   }
   attribute {
+    name = "user_id"
+    type = "S"
+  }
+  attribute {
     name = "time"
     type = "N"
+  }
+
+  local_secondary_index {
+    name            = "time"
+    range_key       = "time"
+    projection_type = "ALL"
   }
 }
 
