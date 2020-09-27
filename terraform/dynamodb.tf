@@ -44,6 +44,26 @@ resource aws_dynamodb_table "users" {
   }
 }
 
+resource aws_dynamodb_table "api_users" {
+  name         = "${var.bot_name}-api-users"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "refresh_token"
+  attribute {
+    name = "refresh_token"
+    type = "S"
+  }
+}
+
+resource aws_dynamodb_table "api_users_tg" {
+  name         = "${var.bot_name}-api-user-tg"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "user_id"
+  attribute {
+    name = "user_id"
+    type = "S"
+  }
+}
+
 data "aws_iam_policy_document" "access_dynamodb" {
   statement {
     actions = [
@@ -55,7 +75,9 @@ data "aws_iam_policy_document" "access_dynamodb" {
     resources = [
       aws_dynamodb_table.keyvalue.arn,
       aws_dynamodb_table.results.arn,
-      aws_dynamodb_table.users.arn
+      aws_dynamodb_table.users.arn,
+      aws_dynamodb_table.api_users.arn,
+      aws_dynamodb_table.api_users_tg.arn
     ]
   }
 }

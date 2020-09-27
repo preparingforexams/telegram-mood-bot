@@ -29,7 +29,9 @@ resource "aws_api_gateway_deployment" "deployment" {
 
   triggers = {
     redeployment = sha1(join(",", list(
-      jsonencode(aws_api_gateway_integration.handle_update)
+      jsonencode(aws_api_gateway_integration.handle_update),
+      jsonencode(aws_api_gateway_integration.post_auth),
+      jsonencode(aws_api_gateway_integration.get_auth)
     )))
   }
 
@@ -38,8 +40,23 @@ resource "aws_api_gateway_deployment" "deployment" {
   }
 
   depends_on = [
-    aws_api_gateway_integration.handle_update
+    aws_api_gateway_integration.handle_update,
+    aws_api_gateway_integration.post_auth,
+    aws_api_gateway_integration.get_auth
   ]
+}
+
+resource "aws_api_gateway_usage_plan" "throttle" {
+  name = "${var.bot_name}-whitelist"
+  api_stages {
+    api_id = aws_api_gateway_rest_api.api.id
+    stage  = aws_api_gateway_deployment.deployment.stage_name
+  }
+
+  throttle_settings {
+    burst_limit = 50
+    rate_limit  = 10
+  }
 }
 
 resource "aws_api_gateway_base_path_mapping" "api_domain" {
