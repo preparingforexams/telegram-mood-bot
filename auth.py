@@ -1,5 +1,8 @@
+import hashlib
+import hmac
 import json
 import os
+
 import jwt
 import secrets
 import uuid
@@ -7,10 +10,11 @@ from datetime import datetime, timedelta
 
 import boto3
 from dataclasses import dataclass
-from typing import Dict, Optional
+from typing import Dict, Optional, Any, Union
 
 from jwt import InvalidTokenError
 
+_BOT_TOKEN = os.getenv('TELEGRAM_TOKEN')
 _REFRESH_TOKEN_HEADER = 'x-refresh-token'
 _USERS_TABLE = os.getenv('USERS_TABLE')
 _USERS_TG_TABLE = os.getenv('USERS_TG_TABLE')
@@ -25,15 +29,17 @@ class Event:
     headers: Dict[str, str]
     query_parameters: Dict[str, str]
     path_parameters: Dict[str, str]
+    request_context: Dict[str, Union[str, dict]]
     body: str
 
     def json(self) -> dict:
         return json.loads(self.body)
 
-    def __init__(self, headers, queryStringParameters, pathParameters, body, **kwargs):
+    def __init__(self, headers, queryStringParameters, pathParameters, requestContext, body, **kwargs):
         self.headers = headers
         self.query_parameters = queryStringParameters
         self.path_parameters = pathParameters
+        self.request_context = requestContext
         self.body = body
 
 
@@ -93,7 +99,40 @@ def handle_refresh(event: Event, context) -> dict:
 
 @proxy
 def handle_telegram_id(event: Event, context) -> dict:
-    return _create_output(status_code=204)
+    body = event.json()
+    # id, first_name, last_name, username, photo_url, auth_date, hash
+    telegram_user_id = _validate_telegram_data(body)
+    if not telegram_user_id:
+        return _create_output(status_code=403)
+
+    user_id = event.request_context['authorizer']['principalId']
+    _put_telegram_user_id(user_id, telegram_user_id)
+
+    token = _create_token(user_id, telegram_user_id)
+    token_pair = _create_token_pair(None, token)
+    return _create_output(token_pair)
+
+
+def _validate_telegram_data(data: dict) -> Optional[str]:
+    expected_hash = data.pop('hash')
+    if not expected_hash:
+        print("Missing hash")
+        return
+
+    check_string = "\n".join(map(lambda x: f"{x[0]}={x[1]}", sorted(data.items())))
+    secret_key = hashlib.sha256(_BOT_TOKEN.encode('utf-8')).digest()
+    actual_hash = hmac.digest(secret_key, check_string.encode('utf-8'), hashlib.sha256).hex()
+    if expected_hash != actual_hash:
+        print("Hash mismatch")
+        return
+
+    yesterday = datetime.utcnow() - timedelta(days=1)
+    auth_date = datetime.utcfromtimestamp(int(data['auth_date']))
+    if auth_date < yesterday:
+        print("Outdated auth data")
+        return
+
+    return data['id']
 
 
 def authorize_request(event: dict, context) -> dict:
@@ -193,6 +232,21 @@ def _get_user(refresh_token: str) -> Optional[dict]:
         'user_id': item['user_id']['S'],
         'expiration': datetime.utcfromtimestamp(float(item['expiration']['N']))
     }
+
+
+def _put_telegram_user_id(user_id: str, telegram_user_id: str):
+    dynamo = boto3.client('dynamodb')
+    dynamo.put_item(
+        TableName=_USERS_TABLE,
+        Item={
+            'user_id': {
+                'S': user_id
+            },
+            'tg_user_id': {
+                'S': telegram_user_id
+            }
+        }
+    )
 
 
 def _get_telegram_user_id(user_id: str) -> Optional[str]:

@@ -13,6 +13,7 @@ resource "aws_lambda_function" "handle_tg_id" {
 
   environment {
     variables = {
+      TELEGRAM_TOKEN = var.telegram_token,
       USERS_TG_TABLE = aws_dynamodb_table.api_users_tg.name,
       KEYVALUE_TABLE = aws_dynamodb_table.keyvalue.name
     }
