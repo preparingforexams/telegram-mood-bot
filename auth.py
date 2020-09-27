@@ -9,10 +9,13 @@ import boto3
 from dataclasses import dataclass
 from typing import Dict, Optional
 
+from jwt import InvalidTokenError
+
 _REFRESH_TOKEN_HEADER = 'x-refresh-token'
 _USERS_TABLE = os.getenv('USERS_TABLE')
 _USERS_TG_TABLE = os.getenv('USERS_TG_TABLE')
 _KEY_VALUE_TABLE = os.getenv('KEYVALUE_TABLE')
+_API_RESOURCE = os.getenv('API_RESOURCE')
 
 _jwt_secret: Optional[str] = None
 
@@ -89,8 +92,53 @@ def handle_refresh(event: Event, context) -> dict:
 
 
 @proxy
-def authorize_request(event: Event, context) -> dict:
-    return _create_output(body=None, status_code=204)
+def handle_telegram_id(event: Event, context) -> dict:
+    return _create_output(status_code=204)
+
+
+def authorize_request(event: dict, context) -> dict:
+    token: str = event['authorizationToken']
+    prefix_length = len("Bearer ")
+    if token and len(token) > prefix_length:
+        token_content = token[prefix_length:]
+    else:
+        print("Token missing or too short")
+        return _build_authorizer_response("user", False, {})
+    try:
+        payload = jwt.decode(token_content, _get_jwt_secret())
+    except InvalidTokenError as e:
+        print(e)
+        print("Invalid token")
+        return _build_authorizer_response("user", False, {})
+
+    context = _build_context(payload.get('telegram_user_id'))
+    return _build_authorizer_response(payload['user_id'], True, context)
+
+
+def _build_authorizer_response(principal_id: str, allow: bool, context: dict) -> dict:
+    return {
+        'principalId': principal_id,
+        'policyDocument': {
+            'Version': "2012-10-17",
+            'Statement': [
+                {
+                    'Action': "execute-api:Invoke",
+                    'Effect': "Allow" if allow else "Deny",
+                    'Resource': _API_RESOURCE
+                }
+            ]
+        },
+        'context': context
+    }
+
+
+def _build_context(telegram_user_id: Optional[str]) -> dict:
+    if telegram_user_id:
+        return {
+            'telegram_user_id': telegram_user_id
+        }
+    else:
+        return {}
 
 
 def _generate_user_id() -> str:

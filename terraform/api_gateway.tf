@@ -6,23 +6,6 @@ resource "aws_api_gateway_rest_api" "api" {
   }
 }
 
-data "aws_iam_policy_document" "lambda_role_invoke_policy" {
-  statement {
-    actions = ["lambda:InvokeFunction", "lambda:InvokeAsync"]
-    resources = [
-      aws_lambda_function.handle_update.arn
-    ]
-  }
-}
-
-resource "aws_iam_role_policy" "lambda_role_invoke_policy" {
-  name_prefix = var.bot_name
-  role        = aws_iam_role.lambda_role.id
-
-  policy = data.aws_iam_policy_document.lambda_role_invoke_policy.json
-}
-
-
 resource "aws_api_gateway_deployment" "deployment" {
   rest_api_id = aws_api_gateway_rest_api.api.id
   stage_name  = "prod"
@@ -31,7 +14,8 @@ resource "aws_api_gateway_deployment" "deployment" {
     redeployment = sha1(join(",", list(
       jsonencode(aws_api_gateway_integration.handle_update),
       jsonencode(aws_api_gateway_integration.post_auth),
-      jsonencode(aws_api_gateway_integration.get_auth)
+      jsonencode(aws_api_gateway_integration.get_auth),
+      jsonencode(aws_api_gateway_integration.put_auth)
     )))
   }
 
@@ -42,11 +26,12 @@ resource "aws_api_gateway_deployment" "deployment" {
   depends_on = [
     aws_api_gateway_integration.handle_update,
     aws_api_gateway_integration.post_auth,
-    aws_api_gateway_integration.get_auth
+    aws_api_gateway_integration.get_auth,
+    aws_api_gateway_integration.put_auth
   ]
 }
 
-resource "aws_api_gateway_usage_plan" "throttle" {
+resource "aws_api_gateway_usage_plan" "whitelist" {
   name = "${var.bot_name}-whitelist"
   api_stages {
     api_id = aws_api_gateway_rest_api.api.id

@@ -21,21 +21,3 @@ resource "aws_api_gateway_integration" "post_auth" {
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.handle_register.invoke_arn
 }
-
-resource "aws_api_gateway_integration_response" "post_auth" {
-  rest_api_id = aws_api_gateway_rest_api.api.id
-  resource_id = aws_api_gateway_resource.auth.id
-  http_method = aws_api_gateway_method.post_auth.http_method
-  status_code = aws_api_gateway_method_response.post_auth.status_code
-
-  depends_on = [
-    aws_api_gateway_integration.post_auth
-  ]
-}
-
-resource "aws_api_gateway_method_response" "post_auth" {
-  rest_api_id = aws_api_gateway_rest_api.api.id
-  resource_id = aws_api_gateway_resource.auth.id
-  http_method = aws_api_gateway_method.post_auth.http_method
-  status_code = "200"
-}
