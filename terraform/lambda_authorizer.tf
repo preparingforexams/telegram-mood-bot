@@ -15,7 +15,7 @@ resource "aws_lambda_function" "authorizer" {
   environment {
     variables = {
       KEYVALUE_TABLE = aws_dynamodb_table.keyvalue.name,
-      API_RESOURCE   = "arn:aws:execute-api:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.api.id}/*/*"
+      API_RESOURCE   = "arn:aws:execute-api:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.api.id}/*/*/"
     }
   }
 }

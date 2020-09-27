@@ -142,19 +142,21 @@ def authorize_request(event: dict, context) -> dict:
         token_content = token[prefix_length:]
     else:
         print("Token missing or too short")
-        return _build_authorizer_response("user", False, {})
+        return _build_authorizer_response("user", None, {})
     try:
         payload = jwt.decode(token_content, _get_jwt_secret())
     except InvalidTokenError as e:
         print(e)
         print("Invalid token")
-        return _build_authorizer_response("user", False, {})
+        return _build_authorizer_response("user", None, {})
 
-    context = _build_context(payload.get('telegram_user_id'))
-    return _build_authorizer_response(payload['user_id'], True, context)
+    telegram_user_id = payload.get('telegram_user_id')
+    context = _build_context(telegram_user_id)
+    allowed_path = "*" if telegram_user_id else "auth"
+    return _build_authorizer_response(payload['user_id'], allowed_path, context)
 
 
-def _build_authorizer_response(principal_id: str, allow: bool, context: dict) -> dict:
+def _build_authorizer_response(principal_id: str, allowed: Optional[str], context: dict) -> dict:
     return {
         'principalId': principal_id,
         'policyDocument': {
@@ -162,8 +164,8 @@ def _build_authorizer_response(principal_id: str, allow: bool, context: dict) ->
             'Statement': [
                 {
                     'Action': "execute-api:Invoke",
-                    'Effect': "Allow" if allow else "Deny",
-                    'Resource': _API_RESOURCE
+                    'Effect': "Allow" if allowed else "Deny",
+                    'Resource': _API_RESOURCE + (allowed if allowed else "*")
                 }
             ]
         },
