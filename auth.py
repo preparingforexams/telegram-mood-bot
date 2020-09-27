@@ -237,7 +237,7 @@ def _get_user(refresh_token: str) -> Optional[dict]:
 def _put_telegram_user_id(user_id: str, telegram_user_id: str):
     dynamo = boto3.client('dynamodb')
     dynamo.put_item(
-        TableName=_USERS_TABLE,
+        TableName=_USERS_TG_TABLE,
         Item={
             'user_id': {
                 'S': user_id
