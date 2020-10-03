@@ -3,11 +3,11 @@ from dataclasses import dataclass
 from typing import Dict, Union, Optional
 
 
-def create_output(body: Optional[dict] = None, status_code: int = 200) -> dict:
+def create_output(body: Optional[dict] = None, status_code: int = 200, headers=None) -> dict:
     return {
         "isBase64Encoded": False,
         "statusCode": status_code,
-        "headers": {},
+        "headers": headers if headers else {},
         "multiValueHeaders": {},
         "body": json.dumps(body)
     }

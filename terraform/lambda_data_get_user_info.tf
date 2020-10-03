@@ -12,9 +12,9 @@ resource "aws_lambda_function" "data_get_user_info" {
 
   environment {
     variables = {
-      USERS_TABLE     = aws_dynamodb_table.api_users.name
+      USERS_TABLE     = aws_dynamodb_table.api_users.name,
       USERS_TG_TABLE  = aws_dynamodb_table.api_users_tg.name,
-      BOT_USERS_TABLE = aws_dynamodb_table.users.name
+      BOT_USERS_TABLE = aws_dynamodb_table.users.name,
       KEYVALUE_TABLE  = aws_dynamodb_table.keyvalue.name
     }
   }
