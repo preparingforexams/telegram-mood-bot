@@ -5,7 +5,6 @@ resource "aws_lambda_permission" "invoke_handle_refresh" {
   source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*/*"
 }
 
-
 resource "aws_api_gateway_method" "get_auth" {
   rest_api_id      = aws_api_gateway_rest_api.api.id
   resource_id      = aws_api_gateway_resource.auth.id

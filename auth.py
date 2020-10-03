@@ -1,18 +1,16 @@
 import hashlib
 import hmac
-import json
 import os
-
-import jwt
 import secrets
 import uuid
 from datetime import datetime, timedelta
+from typing import Optional
 
 import boto3
-from dataclasses import dataclass
-from typing import Dict, Optional, Any, Union
-
+import jwt
 from jwt import InvalidTokenError
+
+from proxy import proxy, Event, create_output
 
 _BOT_TOKEN = os.getenv('TELEGRAM_TOKEN')
 _REFRESH_TOKEN_HEADER = 'x-refresh-token'
@@ -24,65 +22,29 @@ _API_RESOURCE = os.getenv('API_RESOURCE')
 _jwt_secret: Optional[str] = None
 
 
-@dataclass(init=False)
-class Event:
-    headers: Dict[str, str]
-    query_parameters: Dict[str, str]
-    path_parameters: Dict[str, str]
-    request_context: Dict[str, Union[str, dict]]
-    body: str
-
-    def json(self) -> dict:
-        return json.loads(self.body)
-
-    def __init__(self, headers, queryStringParameters, pathParameters, requestContext, body, **kwargs):
-        self.headers = headers
-        self.query_parameters = queryStringParameters
-        self.path_parameters = pathParameters
-        self.request_context = requestContext
-        self.body = body
-
-
-def _create_output(body: Optional[dict] = None, status_code: int = 200) -> dict:
-    return {
-        "isBase64Encoded": False,
-        "statusCode": status_code,
-        "headers": {},
-        "multiValueHeaders": {},
-        "body": json.dumps(body)
-    }
-
-
-def proxy(fn):
-    def _parsed(event: dict, context: dict) -> dict:
-        return fn(Event(**event), context)
-
-    return _parsed
-
-
 @proxy
 def handle_register(event: Event, context) -> dict:
     user_info = _create_refresh_token(_generate_user_id())
     refresh_token = user_info['refresh_token']
     token = _create_token(user_info['user_id'], None)
     token_pair = _create_token_pair(refresh_token, token)
-    return _create_output(token_pair, status_code=201)
+    return create_output(token_pair, status_code=201)
 
 
 @proxy
 def handle_refresh(event: Event, context) -> dict:
     refresh_token = event.headers.get(_REFRESH_TOKEN_HEADER)
     if not refresh_token:
-        return _create_output(status_code=401)
+        return create_output(status_code=401)
 
     user_info = _get_user(refresh_token)
     if not user_info:
-        return _create_output(status_code=401)
+        return create_output(status_code=401)
 
     expiration: datetime = user_info['expiration']
     now = datetime.utcnow()
     if expiration < now:
-        return _create_output(status_code=401)
+        return create_output(status_code=401)
 
     user_id = user_info['user_id']
     token = _create_token(user_id, _get_telegram_user_id(user_id))
@@ -94,7 +56,7 @@ def handle_refresh(event: Event, context) -> dict:
     else:
         token_pair = _create_token_pair(None, token)
 
-    return _create_output(token_pair, status_code=200)
+    return create_output(token_pair, status_code=200)
 
 
 @proxy
@@ -103,14 +65,14 @@ def handle_telegram_id(event: Event, context) -> dict:
     # id, first_name, last_name, username, photo_url, auth_date, hash
     telegram_user_id = _validate_telegram_data(body)
     if not telegram_user_id:
-        return _create_output(status_code=403)
+        return create_output(status_code=403)
 
-    user_id = event.request_context['authorizer']['principalId']
+    user_id = event.get_user_id()
     _put_telegram_user_id(user_id, telegram_user_id)
 
     token = _create_token(user_id, telegram_user_id)
     token_pair = _create_token_pair(None, token)
-    return _create_output(token_pair)
+    return create_output(token_pair)
 
 
 def _validate_telegram_data(data: dict) -> Optional[str]:
