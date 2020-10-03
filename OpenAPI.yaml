@@ -1,0 +1,122 @@
+openapi: 3.0.3
+
+info:
+  title: Moodmixer
+  description: RESTful API to obtain data about your own moods.
+  version: 0.1.0
+
+servers:
+  - url: https://mischebot.telegram.bjoernpetersen.net
+    description: Production server
+
+security:
+  - apiKey: [ ]
+    bearer: [ ]
+
+paths:
+  /auth:
+    post:
+      summary: Register as a new user
+      operationId: register
+      security:
+        - apiKey: [ ]
+      responses:
+        201:
+          description: A new refresh token and access token pair.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenPair"
+
+    put:
+      summary: Associate your account with a telegram user
+      operationId: setTelegramUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TelegramAuth"
+      responses:
+        200:
+          description: A new access token with which you can use the full API.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenPair"
+
+    get:
+      summary: Get a new access token using your refresh token
+      operationId: refresh
+      security:
+        - apiKey: [ ]
+          refresh: [ ]
+      responses:
+        200:
+          description: A new access token, paired with a new refresh token if the used one will expire soon.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenPair"
+
+  /data/me:
+    get:
+      summary: Get info about the authenticated user
+      operationId: getUserInfo
+      responses:
+        200:
+          description: Information about a user.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserInfo"
+        404:
+          description: No data available on the user.
+
+components:
+  schemas:
+    TokenPair:
+      type: object
+      required:
+        - "accessToken"
+      additionalProperties: false
+      properties:
+        refreshToken:
+          type: string
+        accessToken:
+          type: string
+
+    TelegramAuth:
+      type: object
+      additionalProperties: true
+      properties:
+        id:
+          type: string
+        hash:
+          type: string
+        auth_date:
+          type: integer
+          format: int64
+
+    UserInfo:
+      type: object
+      additionalProperties: true
+      required: [ firstName ]
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      name: X-API-Key
+      in: header
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    refresh:
+      type: apiKey
+      name: x-refresh-token
+      in: header
