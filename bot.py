@@ -2,11 +2,11 @@ import json
 import locale
 import os
 from datetime import datetime
-from typing import Optional, List
 
 import boto3
 import pytz
 import requests
+from typing import Optional, List
 
 _bot_token = os.getenv('TELEGRAM_TOKEN')
 _CHAT_ID = "-1001433106001"
@@ -14,7 +14,8 @@ _CHAT_ID = "-1001433106001"
 _TARGET_HOUR = int(os.getenv("TARGET_HOUR"))
 _KV_TABLE_NAME = os.getenv("TABLE_NAME")
 _USER_TABLE_NAME = os.getenv("USER_TABLE_NAME")
-_RESULT_TABLE_NAME = os.getenv("RESULT_TABLE_NAME")
+_RESULT2_TABLE_NAME = os.getenv("RESULT2_TABLE_NAME")
+_GROUP_TABLE_NAME = os.getenv("GROUP_TABLE_NAME")
 
 
 def _handle_poll(poll) -> Optional[dict]:
@@ -27,6 +28,8 @@ def _handle_poll_answer(poll_answer: dict) -> Optional[dict]:
     poll_id = poll_answer['poll_id']
     if not _get_user(user_id):
         _update_user(user)
+    # TODO: only do if user is unknown
+    _add_to_group(user_id, _CHAT_ID)
     option_ids: List[int] = poll_answer['option_ids']
     if option_ids:
         option = option_ids[0]
@@ -39,13 +42,13 @@ def _delete_result(poll_id: str, user_id: str):
     dynamodb = boto3.client('dynamodb')
     print(f"Deleting {poll_id}-{user_id}")
     response = dynamodb.delete_item(
-        TableName=_RESULT_TABLE_NAME,
+        TableName=_RESULT2_TABLE_NAME,
         Key={
-            'poll_id': {
-                'S': poll_id
-            },
             'user_id': {
                 'S': user_id
+            },
+            'poll_id': {
+                'S': poll_id
             }
         }
     )
@@ -59,8 +62,11 @@ def _today() -> str:
 def _update_result(poll_id, user_id, option: int):
     dynamodb = boto3.client('dynamodb')
     response = dynamodb.put_item(
-        TableName=_RESULT_TABLE_NAME,
+        TableName=_RESULT2_TABLE_NAME,
         Item={
+            'group_id': {
+                'S': _CHAT_ID
+            },
             'poll_id': {
                 'S': poll_id
             },
@@ -95,6 +101,21 @@ def _get_user(user_id: str) -> Optional[dict]:
             'id': user_id,
             'first_name': item['first_name']
         }
+
+
+def _add_to_group(user_id: str, group_id: str):
+    dynamodb = boto3.client('dynamodb')
+    response = dynamodb.put_item(
+        TableName=_GROUP_TABLE_NAME,
+        Item={
+            'user_id': {
+                'S': user_id
+            },
+            'group_id': {
+                'S': group_id
+            }
+        }
+    )
 
 
 def _update_user(user: dict):

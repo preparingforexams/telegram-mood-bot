@@ -10,8 +10,8 @@ servers:
     description: Production server
 
 security:
-  - apiKey: [ ]
-    bearer: [ ]
+  - apiKey: []
+    bearer: []
 
 paths:
   /auth:
@@ -19,7 +19,7 @@ paths:
       summary: Register as a new user
       operationId: register
       security:
-        - apiKey: [ ]
+        - apiKey: []
       responses:
         201:
           description: A new refresh token and access token pair.
@@ -48,8 +48,8 @@ paths:
       summary: Get a new access token using your refresh token
       operationId: refresh
       security:
-        - apiKey: [ ]
-          refresh: [ ]
+        - apiKey: []
+          refresh: []
       responses:
         200:
           description: A new access token, paired with a new refresh token if the used one will expire soon.
@@ -71,6 +71,52 @@ paths:
                 $ref: "#/components/schemas/UserInfo"
         404:
           description: No data available on the user.
+
+  /data/user/{userId}:
+    get:
+      summary: Get info about another user
+      operationId: getOtherUserInfo
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+
+      responses:
+        200:
+          description: Info about the requested user.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserInfo"
+        404:
+          description: User not found.
+
+  /data/mood:
+    get:
+      summary: Get mood history
+      operationId: getMoods
+      parameters:
+        - name: from
+          in: query
+          schema:
+            type: number
+            format: int64
+          required: false
+        - name: until
+          in: query
+          schema:
+            type: number
+            format: int64
+          required: false
+      responses:
+        200:
+          description: Moods in the requested timespan.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Moods"
 
 components:
   schemas:
@@ -100,12 +146,47 @@ components:
     UserInfo:
       type: object
       additionalProperties: true
-      required: [ firstName ]
+      required: [firstName]
       properties:
         firstName:
           type: string
         lastName:
           type: string
+
+    Moods:
+      type: object
+      additionalProperties: false
+      required: [from, until, moods]
+      properties:
+        from:
+          type: number
+          format: int64
+        until:
+          type: number
+          format: int64
+        moods:
+          type: array
+          items:
+            type: object
+            required: [day]
+            additionalProperties: false
+            properties:
+              day:
+                type: number
+                format: int64
+              votes:
+                type: array
+                items:
+                  type: object
+                  required: [userId, option]
+                  additionalProperties: false
+                  properties:
+                    userId:
+                      type: string
+                    option:
+                      type: integer
+                      minimum: 0
+                      maximum: 3
 
   securitySchemes:
     apiKey:

@@ -46,7 +46,7 @@ class Event:
         self.path = path
         self.http_method = httpMethod
         self.headers = headers
-        self.query_parameters = queryStringParameters
+        self.query_parameters = queryStringParameters or dict()
         self.path_parameters = pathParameters
         self.request_context = requestContext
         self.body = body

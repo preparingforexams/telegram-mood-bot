@@ -12,10 +12,12 @@ resource "aws_lambda_function" "data" {
 
   environment {
     variables = {
-      USERS_TABLE     = aws_dynamodb_table.api_users.name,
-      USERS_TG_TABLE  = aws_dynamodb_table.api_users_tg.name,
-      BOT_USERS_TABLE = aws_dynamodb_table.users.name,
-      KEYVALUE_TABLE  = aws_dynamodb_table.keyvalue.name
+      USERS_TABLE        = aws_dynamodb_table.api_users.name
+      USERS_TG_TABLE     = aws_dynamodb_table.api_users_tg.name
+      BOT_USERS_TABLE    = aws_dynamodb_table.users.name
+      RESULT2_TABLE_NAME = aws_dynamodb_table.results2.name
+      GROUP_TABLE        = aws_dynamodb_table.groups.name
+      KEYVALUE_TABLE     = aws_dynamodb_table.keyvalue.name
     }
   }
 }
