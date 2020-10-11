@@ -1,4 +1,5 @@
 import json
+
 from dataclasses import dataclass
 from typing import Dict, Union, Optional
 
@@ -15,6 +16,8 @@ def create_output(body: Optional[dict] = None, status_code: int = 200, headers=N
 
 @dataclass(init=False)
 class Event:
+    path: str
+    http_method: str
     headers: Dict[str, str]
     query_parameters: Dict[str, str]
     path_parameters: Dict[str, str]
@@ -30,7 +33,18 @@ class Event:
     def get_telegram_user_id(self) -> str:
         return self.request_context['authorizer']['telegram_user_id']
 
-    def __init__(self, headers, queryStringParameters, pathParameters, requestContext, body, **kwargs):
+    def __init__(
+            self,
+            path,
+            httpMethod,
+            headers,
+            queryStringParameters,
+            pathParameters,
+            requestContext,
+            body,
+            **kwargs):
+        self.path = path
+        self.http_method = httpMethod
         self.headers = headers
         self.query_parameters = queryStringParameters
         self.path_parameters = pathParameters

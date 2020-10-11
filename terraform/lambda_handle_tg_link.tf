@@ -14,7 +14,7 @@ resource "aws_lambda_function" "handle_tg_link" {
     variables = {
       ANDROID_PACKAGE_NAME = var.android_package_name
       FIREBASE_DOMAIN      = var.firebase_domain
-      DEEP_LINK_DOMAIN = "${var.bot_name}.${var.cloudflare_infix}${var.cloudflare_zone_name}"
+      DEEP_LINK_DOMAIN     = "${var.bot_name}.${var.cloudflare_infix}${var.cloudflare_zone_name}"
     }
   }
 }

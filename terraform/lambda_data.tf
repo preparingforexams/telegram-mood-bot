@@ -1,8 +1,8 @@
-resource "aws_lambda_function" "data_get_user_info" {
-  function_name = "${var.bot_name}-getuserinfo"
+resource "aws_lambda_function" "data" {
+  function_name = "${var.bot_name}-data"
   role          = aws_iam_role.lambda_role.arn
   runtime       = "python3.8"
-  handler       = "data.get_user_info"
+  handler       = "data.handle_request"
   timeout       = 30
 
   filename         = "../code.zip"
