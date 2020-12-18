@@ -137,7 +137,7 @@ def _create_poll(chat_id=_CHAT_ID) -> str:
     data = {
         'chat_id': chat_id,
         'question': f"Heute, {_get_day()}, geht es mir",
-        'options': ["Sehr gut", "Gut", "Nicht so gut", "Schlecht"],
+        'options': ["🦦 Sehr gut", "🙂 Gut", "😪 Nicht so gut", "😞 Schlecht"],
         'is_anonymous': False
     }
     response = requests.post(_request_url("sendPoll"), json=data)
