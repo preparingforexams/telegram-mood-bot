@@ -2,15 +2,18 @@ import json
 import locale
 import os
 from datetime import datetime
+from typing import Optional, List
 
 import boto3
 import pytz
 import requests
-from typing import Optional, List
 
 _bot_token = os.getenv('TELEGRAM_TOKEN')
 _CHAT_ID = "-1001433106001"
 # _CHAT_ID = "133399998"
+_MEME_FILE_ID = "AgACAgIAAxkBAAM7YDZLM7l3_SDr5gU6Uui6HQzT0h0AAk2xMRt69rhJVqsnsDCWduc3tAeeLgADAQAD" \
+                "AgADbQADfJACAAEeBA"
+
 _TARGET_HOUR = int(os.getenv("TARGET_HOUR"))
 _KV_TABLE_NAME = os.getenv("TABLE_NAME")
 _USER_TABLE_NAME = os.getenv("USER_TABLE_NAME")
@@ -147,6 +150,18 @@ def _create_poll(chat_id=_CHAT_ID) -> str:
     return message['result']['message_id']
 
 
+def _send_meme(chat_id=_CHAT_ID):
+    data = {
+        'chat_id': chat_id,
+        'disable_notification': True,
+        'photo': _MEME_FILE_ID
+    }
+    try:
+        requests.post(_request_url("sendPhoto"), json=data)
+    except Exception as e:
+        print(f"Could not send meme: {e}")
+
+
 def _get_local_time() -> datetime:
     now = datetime.now()
     berlin_tz = pytz.timezone("Europe/Berlin")
@@ -164,15 +179,35 @@ def _is_hammer_time() -> bool:
     return time.hour == _TARGET_HOUR
 
 
+def _is_wednesday() -> bool:
+    time = _get_local_time()
+    return time.weekday() == 2
+
+
+def _mini_dump(obj: dict) -> str:
+    return json.dumps(obj, separators=(",", ":"))
+
+
 def handle_update(update, context) -> Optional[dict]:
     if 'poll_answer' in update:
         return _handle_poll_answer(update['poll_answer'])
-    else:
+    elif 'poll' in update:
         return _handle_poll(update['poll'])
+    elif 'message' in update:
+        return _handle_message(update['message'])
+    else:
+        dumped_update = _mini_dump(update)
+        print(f"Unknown update type: {dumped_update}")
+
+
+def _handle_message(message: dict):
+    print(f"Received message: {_mini_dump(message)}")
 
 
 def handle_poll_trigger(event, context):
     if _is_hammer_time():
+        if _is_wednesday():
+            _send_meme()
         poll_id = _create_poll()
         _set_last_poll_id(poll_id)
 

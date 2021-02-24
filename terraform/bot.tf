@@ -3,6 +3,7 @@ resource "telegram_bot_webhook" "bot" {
   # See https://core.telegram.org/bots/api#update
   allowed_updates = [
     "poll",
-    "poll_answer"
+    "poll_answer",
+    "message"
   ]
 }
