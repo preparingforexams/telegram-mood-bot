@@ -13,6 +13,7 @@ _CHAT_ID = "-1001433106001"
 # _CHAT_ID = "133399998"
 _MEME_FILE_ID = "AgACAgIAAxkBAAM7YDZLM7l3_SDr5gU6Uui6HQzT0h0AAk2xMRt69rhJVqsnsDCWduc3tAeeLgADAQAD" \
                 "AgADbQADfJACAAEeBA"
+_FRIDAY_MEME_FILE_ID = "BAACAgIAAxkBAAM8YE0YG3NVgZdCH__27kNYL4DTj5MAAnsLAAIFyWhKhR8KzjuNll4eBA"
 
 _TARGET_HOUR = int(os.getenv("TARGET_HOUR"))
 _KV_TABLE_NAME = os.getenv("TABLE_NAME")
@@ -162,6 +163,18 @@ def _send_meme(chat_id=_CHAT_ID):
         print(f"Could not send meme: {e}")
 
 
+def _send_video_meme(file_id: str, chat_id=_CHAT_ID):
+    data = {
+        'chat_id': chat_id,
+        'disable_notification': True,
+        'video': file_id
+    }
+    try:
+        requests.post(_request_url("sendVideo"), json=data)
+    except Exception as e:
+        print(f"Could not send meme: {e}")
+
+
 def _get_local_time() -> datetime:
     now = datetime.now()
     berlin_tz = pytz.timezone("Europe/Berlin")
@@ -182,6 +195,11 @@ def _is_hammer_time() -> bool:
 def _is_wednesday() -> bool:
     time = _get_local_time()
     return time.weekday() == 2
+
+
+def _is_friday() -> bool:
+    time = _get_local_time()
+    return time.weekday() == 4
 
 
 def _mini_dump(obj: dict) -> str:
@@ -208,6 +226,8 @@ def handle_poll_trigger(event, context):
     if _is_hammer_time():
         if _is_wednesday():
             _send_meme()
+        if _is_friday():
+            _send_video_meme(_FRIDAY_MEME_FILE_ID)
         poll_id = _create_poll()
         _set_last_poll_id(poll_id)
 
