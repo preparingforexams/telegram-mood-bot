@@ -17,8 +17,8 @@ terraform {
     }
 
     telegram = {
-      source  = "inhouse.local/local/telegram"
-      version = "0.2.0"
+      source = "yi-jiayu/telegram"
+      version = "0.2.1"
     }
   }
 }
