@@ -1,7 +1,7 @@
 resource "aws_lambda_function" "data" {
   function_name = "${var.bot_name}-data"
   role          = aws_iam_role.lambda_role.arn
-  runtime       = "python3.8"
+  runtime       = var.python_version
   handler       = "data.handle_request"
   timeout       = 30
 

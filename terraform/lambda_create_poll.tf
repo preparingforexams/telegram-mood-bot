@@ -1,7 +1,7 @@
 resource "aws_lambda_function" "handle_poll_trigger" {
   function_name = "${var.bot_name}-handle_poll_trigger"
   role          = aws_iam_role.lambda_role.arn
-  runtime       = "python3.8"
+  runtime       = var.python_version
   handler       = "bot.handle_poll_trigger"
   timeout       = 30
 

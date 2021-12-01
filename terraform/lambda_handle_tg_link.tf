@@ -1,7 +1,7 @@
 resource "aws_lambda_function" "handle_tg_link" {
   function_name = "${var.bot_name}-handletglink"
   role          = aws_iam_role.lambda_role.arn
-  runtime       = "python3.8"
+  runtime       = var.python_version
   handler       = "link.handle_link"
   timeout       = 30
 

@@ -1,7 +1,7 @@
 resource "aws_lambda_function" "handle_app_link" {
   function_name = "${var.bot_name}-handleapplink"
   role          = aws_iam_role.lambda_role.arn
-  runtime       = "python3.8"
+  runtime       = var.python_version
   handler       = "link.handle_app_link"
   timeout       = 30
 

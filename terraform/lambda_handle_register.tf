@@ -1,7 +1,7 @@
 resource "aws_lambda_function" "handle_register" {
   function_name = "${var.bot_name}-handleregister"
   role          = aws_iam_role.lambda_role.arn
-  runtime       = "python3.8"
+  runtime       = var.python_version
   handler       = "auth.handle_register"
   timeout       = 30
 

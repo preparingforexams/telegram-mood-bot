@@ -1,7 +1,7 @@
 resource "aws_lambda_function" "handle_tg_id" {
   function_name = "${var.bot_name}-handletgid"
   role          = aws_iam_role.lambda_role.arn
-  runtime       = "python3.8"
+  runtime       = var.python_version
   handler       = "auth.handle_telegram_id"
   timeout       = 30
 

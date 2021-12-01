@@ -3,7 +3,7 @@ data "aws_caller_identity" "current" {}
 resource "aws_lambda_function" "authorizer" {
   function_name = "${var.bot_name}-authorizer"
   role          = aws_iam_role.lambda_role.arn
-  runtime       = "python3.8"
+  runtime       = var.python_version
   handler       = "auth.authorize_request"
   timeout       = 5
 
