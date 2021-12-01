@@ -45,6 +45,11 @@ class Meme:
 
 
 _MEME_BY_DAY = {
+    DayOfWeek.Monday: Meme(
+        is_video=False,
+        file_id="AgACAgIAAxkBAAM_YadeyBhYrgqfspOYJI2-"
+                "Q0CJBKoAAmS1MRsbNeBI8OUMldl34gMBAAMCAAN4AAMiBA",
+    ),
     DayOfWeek.Wednesday: Meme(
         is_video=False,
         file_id="AgACAgIAAxkBAAM7YDZLM7l3_SDr5gU6Uui6HQzT0h0AAk2xMRt69rhJVqsnsDCWduc3tAeeLgADAQADAg"
