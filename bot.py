@@ -1,7 +1,11 @@
+from __future__ import annotations
+
 import json
 import locale
 import os
+from dataclasses import dataclass
 from datetime import datetime
+from enum import Enum
 from typing import Optional, List
 
 import boto3
@@ -11,15 +15,46 @@ import requests
 _bot_token = os.getenv('TELEGRAM_TOKEN')
 _CHAT_ID = "-1001433106001"
 # _CHAT_ID = "133399998"
-_MEME_FILE_ID = "AgACAgIAAxkBAAM7YDZLM7l3_SDr5gU6Uui6HQzT0h0AAk2xMRt69rhJVqsnsDCWduc3tAeeLgADAQAD" \
-                "AgADbQADfJACAAEeBA"
-_FRIDAY_MEME_FILE_ID = "BAACAgIAAxkBAAM8YE0YG3NVgZdCH__27kNYL4DTj5MAAnsLAAIFyWhKhR8KzjuNll4eBA"
 
 _TARGET_HOUR = int(os.getenv("TARGET_HOUR"))
 _KV_TABLE_NAME = os.getenv("TABLE_NAME")
 _USER_TABLE_NAME = os.getenv("USER_TABLE_NAME")
 _RESULT2_TABLE_NAME = os.getenv("RESULT2_TABLE_NAME")
 _GROUP_TABLE_NAME = os.getenv("GROUP_TABLE_NAME")
+
+
+class DayOfWeek(Enum):
+    Monday = 0
+    Tuesday = 1
+    Wednesday = 2
+    Thursday = 3
+    Friday = 4
+    Saturday = 5
+    Sunday = 6
+
+    @staticmethod
+    def today() -> DayOfWeek:
+        time = _get_local_time()
+        return DayOfWeek(time.weekday())
+
+
+@dataclass
+class Meme:
+    file_id: str
+    is_video: bool
+
+
+_MEME_BY_DAY = {
+    DayOfWeek.Wednesday: Meme(
+        is_video=False,
+        file_id="AgACAgIAAxkBAAM7YDZLM7l3_SDr5gU6Uui6HQzT0h0AAk2xMRt69rhJVqsnsDCWduc3tAeeLgADAQADAg"
+                "ADbQADfJACAAEeBA",
+    ),
+    DayOfWeek.Friday: Meme(
+        is_video=True,
+        file_id="BAACAgIAAxkBAAM8YE0YG3NVgZdCH__27kNYL4DTj5MAAnsLAAIFyWhKhR8KzjuNll4eBA",
+    ),
+}
 
 
 def _handle_poll(poll) -> Optional[dict]:
@@ -151,11 +186,11 @@ def _create_poll(chat_id=_CHAT_ID) -> str:
     return message['result']['message_id']
 
 
-def _send_meme(chat_id=_CHAT_ID):
+def _send_meme(file_id: str, chat_id=_CHAT_ID):
     data = {
         'chat_id': chat_id,
         'disable_notification': True,
-        'photo': _MEME_FILE_ID
+        'photo': file_id
     }
     try:
         requests.post(_request_url("sendPhoto"), json=data)
@@ -192,16 +227,6 @@ def _is_hammer_time() -> bool:
     return time.hour == _TARGET_HOUR
 
 
-def _is_wednesday() -> bool:
-    time = _get_local_time()
-    return time.weekday() == 2
-
-
-def _is_friday() -> bool:
-    time = _get_local_time()
-    return time.weekday() == 4
-
-
 def _mini_dump(obj: dict) -> str:
     return json.dumps(obj, separators=(",", ":"))
 
@@ -224,10 +249,14 @@ def _handle_message(message: dict):
 
 def handle_poll_trigger(event, context):
     if _is_hammer_time():
-        if _is_wednesday():
-            _send_meme()
-        if _is_friday():
-            _send_video_meme(_FRIDAY_MEME_FILE_ID)
+        day_of_week = DayOfWeek.today()
+        meme = _MEME_BY_DAY.get(day_of_week)
+        if meme:
+            if meme.is_video:
+                _send_video_meme(meme.file_id)
+            else:
+                _send_meme(meme.file_id)
+
         poll_id = _create_poll()
         _set_last_poll_id(poll_id)
 
