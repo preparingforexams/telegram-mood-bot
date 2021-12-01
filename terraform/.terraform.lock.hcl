@@ -43,3 +43,22 @@ provider "registry.terraform.io/terraform-providers/cloudflare" {
     "zh:f8ec3bebbbc52caca49030a65c2ffa79cea046516035832181388037065ff5e7",
   ]
 }
+
+provider "registry.terraform.io/yi-jiayu/telegram" {
+  version     = "0.2.1"
+  constraints = "0.2.1"
+  hashes = [
+    "h1:cKVFRW2GmreIiY3Ec5ywg3p01jmion54o3UVqCxiJD0=",
+    "zh:003974b3260a07b6470b07dee7a0e1b6706012aa4ff5ddbea9720020ad1eae4c",
+    "zh:2858f540e5f8a13d1e789ec93e338dcf773bb580e2b57fdb4c51804c3554e50f",
+    "zh:304c43c605ee73eeffb9403ce835bcba4ab1787ca795570b63538016fcbf6400",
+    "zh:3cd716a0cd6118a27a946b9075464648231249671d10723ee7e7b22183f6a597",
+    "zh:426bcebddc6ca11486570f7e7b078ba5dd9b9de56e26ce9f2148da6a64bcbbfe",
+    "zh:5d2afd0f021684d7cdf70f713e4d350c0ce93718d49ad328233daf25bb9c2bb9",
+    "zh:9abca06604f08b879ef51e523cdd252901d43ec1ae4233f663fc63997df221ff",
+    "zh:a84a9e7cb014c19ec29fc1b63cf79db5647a76f0e159ef903cf0093eea441d08",
+    "zh:b7d44db08f52bbf1e51cd987931927abbaea99994ab49280218a6e056127c440",
+    "zh:cdb6c77c940f5735c29ad6ad5d85a49dca1ff0ce1cb6519ef3b3442f7d29424e",
+    "zh:eaecaed4101b72f828bf5b3d6656a390434584b0eed7cff3638c53f10a793167",
+  ]
+}
