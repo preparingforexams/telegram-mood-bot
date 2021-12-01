@@ -1,4 +1,4 @@
-.PHONY: all
+.PHONY: all, apply
 
 all: code.zip layer.zip
 
@@ -13,3 +13,6 @@ python: requirements.txt
 layer.zip: python
 	rm layer.zip || TRUE
 	zip -r layer.zip python
+
+apply: code.zip layer.zip
+	cd terraform && terraform apply
