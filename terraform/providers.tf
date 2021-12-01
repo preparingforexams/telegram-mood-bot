@@ -18,7 +18,6 @@ terraform {
 
     telegram = {
       source = "yi-jiayu/telegram"
-      version = "0.2.1"
     }
   }
 }
