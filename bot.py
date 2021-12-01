@@ -4,7 +4,7 @@ import json
 import locale
 import os
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from enum import Enum
 from typing import Optional, List
 
@@ -228,8 +228,10 @@ def _get_day() -> str:
 
 def _is_hammer_time() -> bool:
     time = _get_local_time()
-    print(f"The hour is: {time.hour}")
-    return time.hour == _TARGET_HOUR
+    target_time = time.replace(hour=_TARGET_HOUR, minute=0, second=0, microsecond=0)
+    diff: timedelta = abs(time - target_time)
+    max_delta = timedelta(minutes=15)
+    return diff <= max_delta
 
 
 def _mini_dump(obj: dict) -> str:
