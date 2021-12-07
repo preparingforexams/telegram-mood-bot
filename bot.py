@@ -4,12 +4,12 @@ import json
 import locale
 import os
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Optional, List
+from zoneinfo import ZoneInfo
 
 import boto3
-import pytz
 import requests
 
 _bot_token = os.getenv('TELEGRAM_TOKEN')
@@ -216,9 +216,9 @@ def _send_video_meme(file_id: str, chat_id=_CHAT_ID):
 
 
 def _get_local_time() -> datetime:
-    now = datetime.now()
-    berlin_tz = pytz.timezone("Europe/Berlin")
-    return berlin_tz.fromutc(now)
+    now = datetime.now(tz=timezone.utc)
+    berlin_tz = ZoneInfo("Europe/Berlin")
+    return now.astimezone(berlin_tz)
 
 
 def _get_day() -> str:
