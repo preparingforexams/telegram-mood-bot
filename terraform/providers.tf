@@ -13,11 +13,7 @@ terraform {
     }
 
     cloudflare = {
-      source = "terraform-providers/cloudflare"
-    }
-
-    telegram = {
-      source = "yi-jiayu/telegram"
+      source = "cloudflare/cloudflare"
     }
   }
 }
@@ -41,8 +37,4 @@ variable "aws_region" {
 provider "aws" {
   profile = var.aws_profile
   region  = var.aws_region
-}
-
-provider "telegram" {
-  bot_token = var.telegram_token
 }

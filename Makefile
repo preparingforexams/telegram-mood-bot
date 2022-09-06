@@ -3,15 +3,15 @@
 all: code.zip layer.zip
 
 code.zip: $(wildcard *.py)
-	rm code.zip || TRUE
+	rm code.zip || true
 	zip code.zip *.py
 
 python: requirements.txt
-	rm -rf python || TRUE
+	rm -rf python || true
 	pip install -r requirements.txt -t python
 
 layer.zip: python
-	rm layer.zip || TRUE
+	rm layer.zip || true
 	zip -r layer.zip python
 
 apply: code.zip layer.zip
