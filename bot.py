@@ -184,7 +184,7 @@ def _create_poll(chat_id=_CHAT_ID) -> str:
         'options': ["🦦 Sehr gut", "🙂 Gut", "😪 Nicht so gut", "😞 Schlecht"],
         'is_anonymous': False
     }
-    response = requests.post(_request_url("sendPoll"), json=data)
+    response = requests.post(_request_url("sendPoll"), json=data, timeout=60)
     print(f"Response code: {response.status_code}")
     message = response.json()
     print(json.dumps(message))
@@ -198,7 +198,7 @@ def _send_meme(file_id: str, chat_id=_CHAT_ID):
         'photo': file_id
     }
     try:
-        requests.post(_request_url("sendPhoto"), json=data)
+        requests.post(_request_url("sendPhoto"), json=data, timeout=60)
     except Exception as e:
         print(f"Could not send meme: {e}")
 
@@ -210,7 +210,7 @@ def _send_video_meme(file_id: str, chat_id=_CHAT_ID):
         'video': file_id
     }
     try:
-        requests.post(_request_url("sendVideo"), json=data)
+        requests.post(_request_url("sendVideo"), json=data, timeout=60)
     except Exception as e:
         print(f"Could not send meme: {e}")
 
@@ -279,7 +279,7 @@ def _close_poll(message_id: str):
         "message_id": message_id,
         "chat_id": _CHAT_ID
     }
-    requests.post(_request_url("stopPoll"), json=data)
+    requests.post(_request_url("stopPoll"), json=data, timeout=60)
 
 
 def _get_last_poll_id() -> Optional[str]:
