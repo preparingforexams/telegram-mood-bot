@@ -62,6 +62,11 @@ _MEMES_BY_DAY = {
             file_id="AgACAgIAAxkBAAM_YadeyBhYrgqfspOYJI2-"
                     "Q0CJBKoAAmS1MRsbNeBI8OUMldl34gMBAAMCAAN4AAMiBA",
         ),
+        Meme(
+            kind=MemeKind.photo,
+            file_id="AgACAgIAAxkBAANDYxdkpr0njPmQiA1jUPJPyhoz04MAAom-"
+                    "MRt2lMFIay6HJVncG6kBAAMCAAN5AAMpBA",
+        ),
     ],
     DayOfWeek.Tuesday: [
         Meme(
