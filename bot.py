@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import locale
 import os
+import random
 from collections import namedtuple
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
@@ -54,25 +55,33 @@ class Meme:
     kind: MemeKind
 
 
-_MEME_BY_DAY = {
-    DayOfWeek.Monday: Meme(
-        kind=MemeKind.photo,
-        file_id="AgACAgIAAxkBAAM_YadeyBhYrgqfspOYJI2-"
-                "Q0CJBKoAAmS1MRsbNeBI8OUMldl34gMBAAMCAAN4AAMiBA",
-    ),
-    DayOfWeek.Tuesday: Meme(
-        kind=MemeKind.animation,
-        file_id="CgACAgQAAxkBAANBYxdhE8fUGGNR82Oh-IatiJM3m-gAAvkCAAKjsB1TKszbmqUkSXYpBA",
-    ),
-    DayOfWeek.Wednesday: Meme(
-        kind=MemeKind.photo,
-        file_id="AgACAgIAAxkBAAM7YDZLM7l3_SDr5gU6Uui6HQzT0h0AAk2xMRt69rhJVqsnsDCWduc3tAeeLgADAQADAg"
-                "ADbQADfJACAAEeBA",
-    ),
-    DayOfWeek.Friday: Meme(
-        kind=MemeKind.video,
-        file_id="BAACAgIAAxkBAAM8YE0YG3NVgZdCH__27kNYL4DTj5MAAnsLAAIFyWhKhR8KzjuNll4eBA",
-    ),
+_MEMES_BY_DAY = {
+    DayOfWeek.Monday: [
+        Meme(
+            kind=MemeKind.photo,
+            file_id="AgACAgIAAxkBAAM_YadeyBhYrgqfspOYJI2-"
+                    "Q0CJBKoAAmS1MRsbNeBI8OUMldl34gMBAAMCAAN4AAMiBA",
+        ),
+    ],
+    DayOfWeek.Tuesday: [
+        Meme(
+            kind=MemeKind.animation,
+            file_id="CgACAgQAAxkBAANBYxdhE8fUGGNR82Oh-IatiJM3m-gAAvkCAAKjsB1TKszbmqUkSXYpBA",
+        ),
+    ],
+    DayOfWeek.Wednesday: [
+        Meme(
+            kind=MemeKind.photo,
+            file_id="AgACAgIAAxkBAAM7YDZLM7l3_"
+                    "SDr5gU6Uui6HQzT0h0AAk2xMRt69rhJVqsnsDCWduc3tAeeLgADAQADAgADbQADfJACAAEeBA",
+        ),
+    ],
+    DayOfWeek.Friday: [
+        Meme(
+            kind=MemeKind.video,
+            file_id="BAACAgIAAxkBAAM8YE0YG3NVgZdCH__27kNYL4DTj5MAAnsLAAIFyWhKhR8KzjuNll4eBA",
+        ),
+    ],
 }
 
 
@@ -259,8 +268,9 @@ def _handle_message(message: dict):
 def handle_poll_trigger(event, context):
     if _is_hammer_time():
         day_of_week = DayOfWeek.today()
-        meme = _MEME_BY_DAY.get(day_of_week)
-        if meme:
+        meme_choices = _MEMES_BY_DAY.get(day_of_week)
+        if meme_choices:
+            meme = random.choice(meme_choices)
             _send_meme(meme)
 
         poll_id = _create_poll()
