@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import locale
 import os
+from collections import namedtuple
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from enum import Enum
@@ -38,25 +39,38 @@ class DayOfWeek(Enum):
         return DayOfWeek(time.weekday())
 
 
+MemeKindParams = namedtuple("MemeKindParams", ["body_key", "method"])
+
+
+class MemeKind(MemeKindParams, Enum):
+    photo = MemeKindParams("photo", "sendPhoto")
+    video = MemeKindParams("video", "sendVideo")
+    animation = MemeKindParams("animation", "sendAnimation")
+
+
 @dataclass
 class Meme:
     file_id: str
-    is_video: bool
+    kind: MemeKind
 
 
 _MEME_BY_DAY = {
     DayOfWeek.Monday: Meme(
-        is_video=False,
+        kind=MemeKind.photo,
         file_id="AgACAgIAAxkBAAM_YadeyBhYrgqfspOYJI2-"
                 "Q0CJBKoAAmS1MRsbNeBI8OUMldl34gMBAAMCAAN4AAMiBA",
     ),
+    DayOfWeek.Tuesday: Meme(
+        kind=MemeKind.animation,
+        file_id="CgACAgQAAxkBAANBYxdhE8fUGGNR82Oh-IatiJM3m-gAAvkCAAKjsB1TKszbmqUkSXYpBA",
+    ),
     DayOfWeek.Wednesday: Meme(
-        is_video=False,
+        kind=MemeKind.photo,
         file_id="AgACAgIAAxkBAAM7YDZLM7l3_SDr5gU6Uui6HQzT0h0AAk2xMRt69rhJVqsnsDCWduc3tAeeLgADAQADAg"
                 "ADbQADfJACAAEeBA",
     ),
     DayOfWeek.Friday: Meme(
-        is_video=True,
+        kind=MemeKind.video,
         file_id="BAACAgIAAxkBAAM8YE0YG3NVgZdCH__27kNYL4DTj5MAAnsLAAIFyWhKhR8KzjuNll4eBA",
     ),
 }
@@ -191,26 +205,14 @@ def _create_poll(chat_id=_CHAT_ID) -> str:
     return message['result']['message_id']
 
 
-def _send_meme(file_id: str, chat_id=_CHAT_ID):
+def _send_meme(meme: Meme, chat_id=_CHAT_ID):
     data = {
         'chat_id': chat_id,
         'disable_notification': True,
-        'photo': file_id
+        meme.kind.body_key: meme.file_id
     }
     try:
-        requests.post(_request_url("sendPhoto"), json=data, timeout=60)
-    except Exception as e:
-        print(f"Could not send meme: {e}")
-
-
-def _send_video_meme(file_id: str, chat_id=_CHAT_ID):
-    data = {
-        'chat_id': chat_id,
-        'disable_notification': True,
-        'video': file_id
-    }
-    try:
-        requests.post(_request_url("sendVideo"), json=data, timeout=60)
+        requests.post(_request_url(meme.kind.method), json=data, timeout=60)
     except Exception as e:
         print(f"Could not send meme: {e}")
 
@@ -259,10 +261,7 @@ def handle_poll_trigger(event, context):
         day_of_week = DayOfWeek.today()
         meme = _MEME_BY_DAY.get(day_of_week)
         if meme:
-            if meme.is_video:
-                _send_video_meme(meme.file_id)
-            else:
-                _send_meme(meme.file_id)
+            _send_meme(meme)
 
         poll_id = _create_poll()
         _set_last_poll_id(poll_id)
