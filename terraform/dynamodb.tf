@@ -1,4 +1,4 @@
-resource aws_dynamodb_table "keyvalue" {
+resource "aws_dynamodb_table" "keyvalue" {
   name         = var.bot_name
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "key"
@@ -8,7 +8,7 @@ resource aws_dynamodb_table "keyvalue" {
   }
 }
 
-resource aws_dynamodb_table "results" {
+resource "aws_dynamodb_table" "results" {
   name         = "${var.bot_name}-results"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "poll_id"
@@ -34,7 +34,7 @@ resource aws_dynamodb_table "results" {
   }
 }
 
-resource aws_dynamodb_table "results2" {
+resource "aws_dynamodb_table" "results2" {
   name         = "${var.bot_name}-results2"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "poll_id"
@@ -65,7 +65,7 @@ resource aws_dynamodb_table "results2" {
   }
 }
 
-resource aws_dynamodb_table "users" {
+resource "aws_dynamodb_table" "users" {
   name         = "${var.bot_name}-users"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "user_id"
@@ -75,7 +75,7 @@ resource aws_dynamodb_table "users" {
   }
 }
 
-resource aws_dynamodb_table "groups" {
+resource "aws_dynamodb_table" "groups" {
   name         = "${var.bot_name}-groups"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "user_id"
@@ -90,7 +90,7 @@ resource aws_dynamodb_table "groups" {
   }
 }
 
-resource aws_dynamodb_table "api_users" {
+resource "aws_dynamodb_table" "api_users" {
   name         = "${var.bot_name}-api-users"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "refresh_token"
@@ -100,7 +100,7 @@ resource aws_dynamodb_table "api_users" {
   }
 }
 
-resource aws_dynamodb_table "api_users_tg" {
+resource "aws_dynamodb_table" "api_users_tg" {
   name         = "${var.bot_name}-api-user-tg"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "user_id"

@@ -9,12 +9,12 @@ terraform {
 
   required_providers {
     aws = {
-      source = "hashicorp/aws"
+      source  = "hashicorp/aws"
       version = "~> 4.32.0"
     }
 
     cloudflare = {
-      source = "cloudflare/cloudflare"
+      source  = "cloudflare/cloudflare"
       version = "~> 3.24.0"
     }
   }
@@ -28,12 +28,12 @@ provider "cloudflare" {
 
 variable "aws_profile" {
   default = "default"
-  type = string
+  type    = string
 }
 
 variable "aws_region" {
   default = "eu-central-1"
-  type = string
+  type    = string
 }
 
 provider "aws" {
