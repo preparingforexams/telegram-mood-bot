@@ -81,6 +81,12 @@ _MEMES_BY_DAY = {
                     "SDr5gU6Uui6HQzT0h0AAk2xMRt69rhJVqsnsDCWduc3tAeeLgADAQADAgADbQADfJACAAEeBA",
         ),
     ],
+    DayOfWeek.Thursday: [
+        Meme(
+            kind=MemeKind.animation,
+            file_id="CgACAgIAAxkBAANEYzMf9xDKJ4ScYBT5JriNNV8L4aAAAiweAAIl4plJ4JCjKfT7dRUpBA",
+        ),
+    ],
     DayOfWeek.Friday: [
         Meme(
             kind=MemeKind.video,
