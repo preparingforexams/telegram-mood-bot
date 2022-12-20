@@ -14,5 +14,8 @@ layer.zip: python
 	rm layer.zip || true
 	zip -r layer.zip python
 
+init:
+	cd terraform && terraform init
+
 apply: code.zip layer.zip
 	cd terraform && terraform apply
