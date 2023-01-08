@@ -9,7 +9,8 @@ python/
 
 # Python
 venv/
-.venv
+.venv/
+.*venv/
 *.pyc
 
 # Terraform
