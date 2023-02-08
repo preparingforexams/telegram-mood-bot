@@ -10,22 +10,12 @@ resource "aws_api_gateway_deployment" "deployment" {
   rest_api_id = aws_api_gateway_rest_api.api.id
   stage_name  = "prod"
 
-  # This would be better but it's broken
-  #  triggers = {
-  #    redeployment = sha1(join(",", [
-  #      jsonencode(aws_api_gateway_integration.handle_update),
-  #      jsonencode(aws_api_gateway_integration.post_auth),
-  #      jsonencode(aws_api_gateway_integration.get_auth),
-  #      jsonencode(aws_api_gateway_integration.put_auth),
-  #    ]))
-  #  }
-
   triggers = {
     redeployment = sha1(join(",", [
-      jsonencode(aws_lambda_function.handle_update.last_modified),
-      jsonencode(aws_lambda_function.handle_refresh.last_modified),
-      jsonencode(aws_lambda_function.handle_app_link.last_modified),
-      jsonencode(aws_lambda_function.handle_poll_trigger.last_modified),
+      jsonencode(aws_api_gateway_integration.handle_update),
+      jsonencode(aws_api_gateway_integration.post_auth),
+      jsonencode(aws_api_gateway_integration.get_auth),
+      jsonencode(aws_api_gateway_integration.put_auth),
     ]))
   }
 
