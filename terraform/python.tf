@@ -1,4 +1,4 @@
 variable "python_version" {
-  default = "python3.9"
+  default = "python3.10"
   type    = string
 }
