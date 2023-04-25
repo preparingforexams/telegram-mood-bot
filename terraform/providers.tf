@@ -1,23 +1,21 @@
 terraform {
   required_version = "1.4.5"
 
-  backend "remote" {
-    hostname = "app.terraform.io"
-
-    workspaces {
-      name = "mischebot"
-    }
+  backend "s3" {
+    region = "eu-central-1"
+    bucket = "legacy-terraform-states"
+    key    = "mischebot"
   }
 
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.64.0"
+      version = "~> 4.64"
     }
 
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "~> 4.4.0"
+      version = "~> 4.4"
     }
   }
 }
@@ -36,5 +34,5 @@ variable "aws_region" {
 }
 
 provider "aws" {
-  region  = var.aws_region
+  region = var.aws_region
 }
