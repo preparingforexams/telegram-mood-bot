@@ -1,0 +1,16 @@
+appVersion: REPLACEME
+image:
+  app: ghcr.io/preparingforexams/telegram-mood-bot/app
+  migrations: ghcr.io/preparingforexams/telegram-mood-bot/migrations
+postgres:
+  database: mood
+  user: prep-mood-bot.mood
+  service: born-postgres
+  namespace: born-postgres
+enabledChats:
+  - 133399998
+crons:
+  - schedule: "0 13 * * *"
+    command: send-polls
+  - schedule: "0 0 * * *"
+    command: close-polls

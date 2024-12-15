@@ -1,21 +1,12 @@
-.PHONY: all, apply
+.PHONY: check
+check: lint test
 
-all: code.zip layer.zip
+.PHONY: lint
+lint:
+	uv run ruff format src/
+	uv run ruff check --fix --show-fixes src/
+	uv run mypy src/
 
-code.zip: $(wildcard *.py)
-	rm code.zip || true
-	zip code.zip *.py
-
-python: requirements.txt
-	rm -rf python || true
-	pip install -r requirements.txt -t python
-
-layer.zip: python
-	rm layer.zip || true
-	zip -r layer.zip python
-
-init:
-	cd terraform && terraform init
-
-apply: code.zip layer.zip
-	cd terraform && terraform apply
+.PHONY: test
+test:
+	uv run pytest src/

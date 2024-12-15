@@ -1,0 +1,45 @@
+{{- range $cronSpec := .Values.crons }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-{{ $cronSpec.command }}
+spec:
+  schedule: {{ $cronSpec.schedule | quote }}
+  timeZone: "Europe/Berlin"
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 1
+  startingDeadlineSeconds: 1200
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 1800
+      template:
+        spec:
+          containers:
+            - name: app
+              image: {{ .Values.image.app }}:{{ .Values.appVersion }}
+              args:
+                - {{ $cronSpec.command }}
+              resources:
+                limits:
+                  cpu: 1000m
+                requests:
+                  cpu: 1000m
+                  memory: 128Mi
+              env:
+                - name: DATABASE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.postgres.user }}.{{ .Values.postgres.service }}.credentials.postgresql.acid.zalan.do
+                      key: password
+              envFrom:
+                - configMapRef:
+                    name: {{ .Release.Name }}-telegram
+                - configMapRef:
+                    name: {{ .Release.Name }}-gcp
+                - configMapRef:
+                    name: {{ .Release.Name }}-db-config
+                - secretRef:
+                    name: {{ .Release.Name }}-secrets
+{{- end }}

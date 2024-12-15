@@ -1,21 +1,18 @@
-# IDEs
+# Files and directories created by pub.
+__pycache__
+.venv
+
+# IntelliJ IDEA
 .idea/
-.vscode/
-*.iml
 
-# Distribution files
-*.zip
-python/
+# TMP dirs
+downloads/
 
-# Python
-venv/
-.venv/
-.*venv/
-*.pyc
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
 
-# Terraform
-*.tfvars
-.terraform
+*.env
 
 # macOS
 .DS_Store

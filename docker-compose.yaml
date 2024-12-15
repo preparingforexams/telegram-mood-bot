@@ -1,0 +1,28 @@
+volumes:
+  pg: {}
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    volumes:
+      - pg:/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: pg_isready -U postgres
+    environment:
+      PGDATA: /data/pg
+      POSTGRES_PASSWORD: postgres
+
+  migrations:
+    build:
+      context: migrations
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./migrations/sql:/flyway/sql
+    environment:
+      FLYWAY_USER: postgres
+      FLYWAY_PASSWORD: postgres
+      FLYWAY_URL: jdbc:postgresql://postgres:5432/postgres
