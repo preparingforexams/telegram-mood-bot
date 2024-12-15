@@ -38,9 +38,7 @@ spec:
                 - configMapRef:
                     name: {{ $.Release.Name }}-telegram
                 - configMapRef:
-                    name: {{ $.Release.Name }}-gcp
-                - configMapRef:
-                    name: {{ $.Release.Name }}-db-config
+                    name: {{ $.Release.Name }}-db
                 - secretRef:
                     name: {{ $.Release.Name }}-secrets
 {{- end }}

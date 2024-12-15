@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name}}-db-config
+  name: {{ .Release.Name}}-db
 data:
   DATABASE_NAME: "{{ .Values.postgres.database }}"
   DATABASE_HOST: "{{ .Values.postgres.service }}.{{ .Values.postgres.namespace}}"
