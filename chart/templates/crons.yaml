@@ -16,6 +16,7 @@ spec:
       activeDeadlineSeconds: 1800
       template:
         spec:
+          restartPolicy: Never
           containers:
             - name: app
               image: {{ $.Values.image.app }}:{{ $.Values.appVersion }}
