@@ -67,7 +67,7 @@ class MoodBot:
         if poll_answer is None:
             raise ValueError("Poll answer was None")
 
-        user = User.from_telegram(poll_answer.user)
+        user = User.from_telegram(cast(telegram.User, poll_answer.user))
         answer = PollAnswer.from_telegram(poll_answer)
         _logger.info("Received poll answer from %s: %s", user, answer)
 

@@ -37,6 +37,10 @@ bs-config = { index = "internal" }
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[[tool.mypy.overrides]]
+module = "asyncpg"
+ignore_missing_imports = true
+
 [tool.ruff.lint]
 select = [
     "E4",

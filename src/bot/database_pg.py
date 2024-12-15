@@ -1,5 +1,5 @@
 import logging
-from collections.abc import Iterable
+from collections.abc import AsyncIterable
 from datetime import datetime
 from typing import cast
 
@@ -81,7 +81,7 @@ class PostgresDatabase(Database):
 
             return self._poll_from_row(row)
 
-    async def get_open_polls(self) -> Iterable[Poll]:
+    async def get_open_polls(self) -> AsyncIterable[Poll]:
         async with self._pool.acquire() as connection:
             connection = cast(asyncpg.Connection, connection)
             records = await connection.fetch(

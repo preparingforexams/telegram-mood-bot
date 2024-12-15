@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from enum import IntEnum
-from typing import Self
+from typing import Self, cast
 
 import telegram
 
@@ -62,7 +62,7 @@ class PollAnswer:
         return cls(
             time=datetime.now(tz=UTC),
             option=PollOption(options[0]) if options else None,
-            user_id=answer.user.id,
+            user_id=cast(telegram.User, answer.user).id,
             poll_id=str(answer.poll_id),
         )
 
