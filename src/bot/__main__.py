@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import sys
+from dataclasses import replace
 from datetime import UTC, datetime, time, timedelta
 from zoneinfo import ZoneInfo
 
@@ -70,19 +71,14 @@ def _build_poll(*, poll_id: str, group_id: int, answer_time: datetime) -> Poll:
 async def _import_results(dynamo: DynamoClient, database: Database) -> None:
     await database.open()
     try:
-        poll_ids = set()
         async for imported in dynamo.list_answers():
             answer = imported.answer
-            if answer.poll_id not in poll_ids:
-                _logger.info("Inserting new poll %s", answer.poll_id)
-                poll_ids.add(answer.poll_id)
-                poll = _build_poll(
-                    poll_id=answer.poll_id,
-                    group_id=imported.group_id,
-                    answer_time=answer.time,
-                )
-                await database.insert_poll(poll)
-
+            plausible_time = datetime.combine(
+                answer.time.date(),
+                time(14),
+                tzinfo=ZoneInfo("Europe/Berlin"),
+            )
+            answer = replace(answer, time=plausible_time)
             await database.upsert_answer(answer)
     finally:
         await database.close()
