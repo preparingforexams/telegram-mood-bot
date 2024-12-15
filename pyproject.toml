@@ -10,7 +10,9 @@ classifiers = [
 ]
 
 dependencies = [
+    "aioboto3 >=13, <14",
     "asyncpg ==0.30.*",
+    "boto3 ==1.35.*",
     "bs-config [dotenv] ==1.1.1",
     "httpx ==0.28.*",
     "python-telegram-bot ==21.9",
@@ -19,9 +21,11 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "boto3-stubs [essential] ==1.35.*",
     "mypy ==1.13.*",
     "pytest >=8, <9",
     "ruff ==0.8.3",
+    "types-aiobotocore[essential] ==2.15.*",
     "types-requests",
 ]
 
@@ -39,6 +43,10 @@ build-backend = "hatchling.build"
 
 [[tool.mypy.overrides]]
 module = "asyncpg"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "aioboto3"
 ignore_missing_imports = true
 
 [tool.ruff.lint]

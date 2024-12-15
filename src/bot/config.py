@@ -58,8 +58,22 @@ class DatabaseConfig:
 
 
 @dataclass(frozen=True, kw_only=True)
+class AwsConfig:
+    access_key: str
+    secret_key: str
+
+    @classmethod
+    def from_env(cls, env: Env) -> Self:
+        return cls(
+            access_key=env.get_string("ACCESS_KEY", required=True),
+            secret_key=env.get_string("SECRET_KEY", required=True),
+        )
+
+
+@dataclass(frozen=True, kw_only=True)
 class Config:
     active_chats: list[int]
+    aws: AwsConfig
     database: DatabaseConfig
     sentry: SentryConfig | None
     telegram: TelegramConfig
@@ -68,6 +82,7 @@ class Config:
     def from_env(cls, env: Env) -> Self:
         return cls(
             active_chats=env.get_int_list("ACTIVE_CHATS", required=True),
+            aws=AwsConfig.from_env(env.scoped("AWS_")),
             database=DatabaseConfig.from_env(env.scoped("DATABASE_")),
             sentry=SentryConfig.from_env(env),
             telegram=TelegramConfig.from_env(env),

@@ -14,3 +14,6 @@ crons:
     command: send-polls
   - schedule: "0 0 * * *"
     command: close-polls
+  - schedule: "0 0 * * *"
+    command: import-users
+    suspend: true
