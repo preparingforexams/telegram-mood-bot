@@ -37,6 +37,16 @@ async def _import_users(dynamo: DynamoClient, database: Database) -> None:
         await database.close()
 
 
+async def _import_user_groups(dynamo: DynamoClient, database: Database) -> None:
+    await database.open()
+    try:
+        async for user_id, group_id in dynamo.list_user_groups():
+            _logger.info("Linking user %d to group %d", user_id, group_id)
+            await database.add_to_group(user_id=user_id, group_id=group_id)
+    finally:
+        await database.close()
+
+
 def main() -> None:
     config, database = initialize()
 
@@ -60,6 +70,9 @@ def main() -> None:
         case "import-users":
             _logger.info("Importing users")
             asyncio.run(_import_users(DynamoClient(config.aws), database))
+        case "import-user-groups":
+            _logger.info("Importing user groups")
+            asyncio.run(_import_user_groups(DynamoClient(config.aws), database))
         case other:
             _logger.error("Unknown operation mode: %s", other)
             sys.exit(1)

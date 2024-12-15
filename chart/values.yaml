@@ -12,8 +12,13 @@ enabledChats:
 crons:
   - schedule: "0 13 * * *"
     command: send-polls
+    suspend:
   - schedule: "0 0 * * *"
     command: close-polls
+    suspend: true
   - schedule: "0 0 * * *"
     command: import-users
+    suspend: true
+  - schedule: "0 0 * * *"
+    command: import-user-groups
     suspend: true

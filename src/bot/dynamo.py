@@ -39,3 +39,15 @@ class DynamoClient:
                 response = await table.scan(ExclusiveStartKey=last_key)
                 for item in response.get("Items"):
                     yield self._build_user(item)
+
+    async def list_user_groups(self) -> AsyncIterable[tuple[int, int]]:
+        async with self._session.resource("dynamodb") as resource:
+            table = await resource.Table("mischebot-groups")
+            response = await table.scan()
+            for item in response.get("Items"):
+                yield int(item["user_id"]), int(item["group_id"])
+
+            while last_key := response.get("LastEvaluatedKey"):
+                response = await table.scan(ExclusiveStartKey=last_key)
+                for item in response.get("Items"):
+                    yield int(item["user_id"]), int(item["group_id"])
