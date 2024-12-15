@@ -12,7 +12,7 @@ enabledChats:
 crons:
   - schedule: "0 13 * * *"
     command: send-polls
-    suspend:
+    suspend: true
   - schedule: "0 0 * * *"
     command: close-polls
     suspend: true
