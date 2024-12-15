@@ -70,13 +70,14 @@ def _build_poll(*, poll_id: str, group_id: int, answer_time: datetime) -> Poll:
 
 async def _import_results(dynamo: DynamoClient, database: Database) -> None:
     await database.open()
+    tz = ZoneInfo("Europe/Berlin")
     try:
         async for imported in dynamo.list_answers():
             answer = imported.answer
             plausible_time = datetime.combine(
                 answer.time.date(),
                 time(14),
-                tzinfo=ZoneInfo("Europe/Berlin"),
+                tzinfo=tz,
             )
             answer = replace(answer, time=plausible_time)
             await database.upsert_answer(answer)
