@@ -2,7 +2,7 @@ import abc
 from collections.abc import AsyncIterable
 from datetime import datetime
 
-from bot.model import PollAnswer, User, Poll
+from bot.model import Poll, PollAnswer, User
 
 
 class DatabaseException(abc.ABC, Exception):
@@ -12,9 +12,11 @@ class DatabaseException(abc.ABC, Exception):
 class OperationalException(DatabaseException):
     pass
 
+
 class NotFoundException(DatabaseException):
-    def __init__(self, entity_id:str)->None:
+    def __init__(self, entity_id: str) -> None:
         super().__init__(f"Lookup by ID failed: {entity_id}")
+
 
 class ConstraintException(DatabaseException):
     pass
@@ -26,15 +28,15 @@ class DuplicateException(ConstraintException):
 
 class Database(abc.ABC):
     @abc.abstractmethod
-    async def open(self)->None:
+    async def open(self) -> None:
         pass
 
     @abc.abstractmethod
-    async def get_poll(self, poll_id: str) ->Poll:
+    async def get_poll(self, poll_id: str) -> Poll:
         pass
 
     @abc.abstractmethod
-    def get_open_polls(self)->AsyncIterable[Poll]:
+    def get_open_polls(self) -> AsyncIterable[Poll]:
         pass
 
     @abc.abstractmethod
@@ -50,7 +52,11 @@ class Database(abc.ABC):
         pass
 
     @abc.abstractmethod
-    async def update_poll_close_time(self, poll_id: str, close_time: datetime,) -> None:
+    async def update_poll_close_time(
+        self,
+        poll_id: str,
+        close_time: datetime,
+    ) -> None:
         pass
 
     @abc.abstractmethod

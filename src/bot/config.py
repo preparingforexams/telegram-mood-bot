@@ -36,6 +36,7 @@ class TelegramConfig:
             timezone_name=env.get_string("TELEGRAM_TIMEZONE", default="Etc/UTC"),
         )
 
+
 @dataclass(frozen=True, kw_only=True)
 class DatabaseConfig:
     host: str
@@ -43,7 +44,7 @@ class DatabaseConfig:
     username: str
     password: str
 
-    def to_connection_string(self)->str:
+    def to_connection_string(self) -> str:
         return f"postgresql://{self.username}:{self.password}@{self.host}/{self.name}"
 
     @classmethod
@@ -54,6 +55,7 @@ class DatabaseConfig:
             username=env.get_string("USERNAME", required=True),
             password=env.get_string("PASSWORD", required=True),
         )
+
 
 @dataclass(frozen=True, kw_only=True)
 class Config:

@@ -33,12 +33,12 @@ _MEMES_BY_DAY = {
         Meme(
             kind=MemeKind.photo,
             file_id="AgACAgIAAxkBAAM_YadeyBhYrgqfspOYJI2-"
-                    "Q0CJBKoAAmS1MRsbNeBI8OUMldl34gMBAAMCAAN4AAMiBA",
+            "Q0CJBKoAAmS1MRsbNeBI8OUMldl34gMBAAMCAAN4AAMiBA",
         ),
         Meme(
             kind=MemeKind.photo,
             file_id="AgACAgIAAxkBAANDYxdkpr0njPmQiA1jUPJPyhoz04MAAom-"
-                    "MRt2lMFIay6HJVncG6kBAAMCAAN5AAMpBA",
+            "MRt2lMFIay6HJVncG6kBAAMCAAN5AAMpBA",
         ),
     ],
     DayOfWeek.Tuesday: [
@@ -51,7 +51,7 @@ _MEMES_BY_DAY = {
         Meme(
             kind=MemeKind.photo,
             file_id="AgACAgIAAxkBAAM7YDZLM7l3_"
-                    "SDr5gU6Uui6HQzT0h0AAk2xMRt69rhJVqsnsDCWduc3tAeeLgADAQADAgADbQADfJACAAEeBA",
+            "SDr5gU6Uui6HQzT0h0AAk2xMRt69rhJVqsnsDCWduc3tAeeLgADAQADAgADbQADfJACAAEeBA",
         ),
     ],
     DayOfWeek.Thursday: [

@@ -2,13 +2,13 @@ import asyncio
 import logging
 import sys
 
-from bot.init import initialize
 from bot.bot import MoodBot
+from bot.init import initialize
 
 _logger = logging.getLogger(__package__)
 
 
-async def _send_polls(bot: MoodBot, active_chats: list[int])->None:
+async def _send_polls(bot: MoodBot, active_chats: list[int]) -> None:
     await bot.initialize()
     try:
         for chat_id in active_chats:
@@ -16,14 +16,16 @@ async def _send_polls(bot: MoodBot, active_chats: list[int])->None:
     finally:
         await bot.close()
 
-async def _close_polls(bot: MoodBot) ->None:
+
+async def _close_polls(bot: MoodBot) -> None:
     await bot.initialize()
     try:
         await bot.close_open_polls()
     finally:
         await bot.close()
 
-def main()->None:
+
+def main() -> None:
     config, database = initialize()
 
     bot = MoodBot(config.telegram, database)
@@ -44,7 +46,7 @@ def main()->None:
             _logger.info("Closing polls")
             asyncio.run(_close_polls(bot))
         case other:
-            _logger.error(f"Unknown operation mode: {other}")
+            _logger.error("Unknown operation mode: %s", other)
             sys.exit(1)
 
 

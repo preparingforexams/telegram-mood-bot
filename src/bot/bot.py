@@ -1,6 +1,6 @@
 import logging
 import signal
-from datetime import tzinfo, datetime, UTC
+from datetime import UTC, datetime, tzinfo
 from typing import cast
 from zoneinfo import ZoneInfo
 
@@ -13,7 +13,7 @@ from telegram.ext import (
 
 from bot.config import TelegramConfig
 from bot.database import Database
-from bot.model import User, PollAnswer, PollOption, Poll
+from bot.model import Poll, PollAnswer, PollOption, User
 
 _logger = logging.getLogger(__name__)
 
@@ -69,7 +69,7 @@ class MoodBot:
 
         user = User.from_telegram(poll_answer.user)
         answer = PollAnswer.from_telegram(poll_answer)
-        _logger.info(f"Received poll answer from {user}: {answer}")
+        _logger.info("Received poll answer from %s: %s", user, answer)
 
         await self.db.upsert_user(user)
         await self.db.upsert_answer(answer)
@@ -107,7 +107,7 @@ class MoodBot:
     async def close_open_polls(self) -> None:
         close_time = self._now()
         async for poll in self.db.get_open_polls():
-            _logger.debug(f"Closing poll {poll.id} in group {poll.group_id}")
+            _logger.debug("Closing poll %s in group %d", poll.id, poll.group_id)
             await self.bot.stop_poll(
                 chat_id=poll.group_id,
                 message_id=poll.message_id,

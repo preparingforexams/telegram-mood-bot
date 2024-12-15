@@ -3,7 +3,7 @@ import logging
 import sentry_sdk
 from bs_config import Env
 
-from bot.config import Config, SentryConfig, DatabaseConfig
+from bot.config import Config, DatabaseConfig, SentryConfig
 from bot.database import Database
 from bot.database_pg import PostgresDatabase
 
@@ -27,7 +27,8 @@ def _setup_sentry(config: SentryConfig | None) -> None:
         release=config.release,
     )
 
-def _create_database(config:DatabaseConfig)->Database:
+
+def _create_database(config: DatabaseConfig) -> Database:
     return PostgresDatabase(config)
 
 

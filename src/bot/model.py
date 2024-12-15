@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from enum import IntEnum
 from typing import Self
 
@@ -32,6 +32,7 @@ class Poll:
     creation_time: datetime
     close_time: datetime | None
 
+
 @dataclass(frozen=True, kw_only=True)
 class User:
     id: int
@@ -39,7 +40,10 @@ class User:
 
     @classmethod
     def from_telegram(cls, user: telegram.User) -> Self:
-        return cls(id=user.id, first_name=user.first_name, )
+        return cls(
+            id=user.id,
+            first_name=user.first_name,
+        )
 
     def __str__(self) -> str:
         return f"{self.first_name} ({self.id})"
@@ -69,7 +73,7 @@ class PollAnswer:
 
         return option.value
 
-    def __str__(self)->str:
+    def __str__(self) -> str:
         option = self.option
         if option:
             return option.name

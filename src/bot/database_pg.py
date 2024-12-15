@@ -1,13 +1,13 @@
 import logging
 from collections.abc import Iterable
 from datetime import datetime
-from typing import cast, AsyncIterable
+from typing import cast
 
 import asyncpg
 
 from bot.config import DatabaseConfig
-from bot.database import Database, OperationalException, NotFoundException
-from bot.model import User, Poll, PollAnswer
+from bot.database import Database, NotFoundException, OperationalException
+from bot.model import Poll, PollAnswer, User
 
 _logger = logging.getLogger(__name__)
 
@@ -48,7 +48,7 @@ class PostgresDatabase(Database):
             async with self._pool.acquire():
                 return True
         except asyncpg.PostgresConnectionError as e:
-            _logger.error('Connection unhealthy', exc_info=e)
+            _logger.error("Connection unhealthy", exc_info=e)
             return False
 
     async def close(self) -> None:
@@ -68,7 +68,7 @@ class PostgresDatabase(Database):
 
     async def get_poll(self, poll_id: str) -> Poll:
         async with self._pool.acquire() as connection:
-            connection= cast( asyncpg.Connection, connection)
+            connection = cast(asyncpg.Connection, connection)
             row = await connection.fetchrow(
                 """
                 SELECT * FROM polls WHERE id = $1;
@@ -83,7 +83,7 @@ class PostgresDatabase(Database):
 
     async def get_open_polls(self) -> Iterable[Poll]:
         async with self._pool.acquire() as connection:
-            connection= cast( asyncpg.Connection, connection)
+            connection = cast(asyncpg.Connection, connection)
             records = await connection.fetch(
                 """
                 SELECT * FROM polls WHERE close_time is null;
@@ -92,10 +92,9 @@ class PostgresDatabase(Database):
             for row in records:
                 yield self._poll_from_row(row)
 
-
     async def upsert_user(self, user: User) -> None:
         async with self._pool.acquire() as connection:
-            connection= cast( asyncpg.Connection, connection)
+            connection = cast(asyncpg.Connection, connection)
             await connection.execute(
                 """
                 INSERT INTO users(id, first_name)
@@ -109,7 +108,7 @@ class PostgresDatabase(Database):
 
     async def add_to_group(self, *, user_id: int, group_id: int) -> None:
         async with self._pool.acquire() as connection:
-            connection= cast( asyncpg.Connection, connection)
+            connection = cast(asyncpg.Connection, connection)
             await connection.execute(
                 """
                 INSERT INTO users_groups(user_id, group_id)
@@ -122,7 +121,7 @@ class PostgresDatabase(Database):
 
     async def insert_poll(self, poll: Poll) -> None:
         async with self._pool.acquire() as connection:
-            connection= cast( asyncpg.Connection, connection)
+            connection = cast(asyncpg.Connection, connection)
             await connection.execute(
                 """
                 INSERT INTO polls(id, group_id, message_id, creation_time, close_time)
@@ -135,7 +134,11 @@ class PostgresDatabase(Database):
                 poll.close_time,
             )
 
-    async def update_poll_close_time(self, poll_id: str, close_time: datetime,) -> None:
+    async def update_poll_close_time(
+        self,
+        poll_id: str,
+        close_time: datetime,
+    ) -> None:
         async with self._pool.acquire() as connection:
             connection = cast(asyncpg.Connection, connection)
             await connection.execute(
@@ -147,6 +150,7 @@ class PostgresDatabase(Database):
                 poll_id,
                 close_time,
             )
+
     async def upsert_answer(self, poll_answer: PollAnswer) -> None:
         async with self._pool.acquire() as connection:
             connection = cast(asyncpg.Connection, connection)
