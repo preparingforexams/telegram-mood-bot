@@ -58,7 +58,7 @@ spec:
                   key: password
           envFrom:
             - configMapRef:
-                name: {{ .Release.Name }}-telegram
+                name: {{ .Release.Name }}-base
             - configMapRef:
                 name: {{ .Release.Name }}-db
             - secretRef:
