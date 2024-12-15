@@ -8,7 +8,7 @@ postgres:
   service: born-postgres
   namespace: born-postgres
 enabledChats:
-  - 133399998
+  - "133399998"
 crons:
   - schedule: "0 13 * * *"
     command: send-polls
