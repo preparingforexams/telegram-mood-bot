@@ -57,12 +57,12 @@ jobs:
       - run: git push origin main:release
 
   clean:
-    concurrency: cleanup
     needs: [ deploy ]
     strategy:
       fail-fast: false
       matrix:
         variant: [ app, migrations ]
+    concurrency: cleanup-${{ matrix.variant}}
     uses: preparingforexams/actions-container/.github/workflows/clean.yml@v5
     with:
       image-name: telegram-mood-bot/${{ matrix.variant }}
