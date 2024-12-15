@@ -1,11 +1,11 @@
-{{- range $cronSpec := .Values.crons }}
+{{- range .Values.crons }}
 ---
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ .Release.Name }}-{{ $cronSpec.command }}
+  name: {{ $.Release.Name }}-{{ .command }}
 spec:
-  schedule: {{ $cronSpec.schedule | quote }}
+  schedule: {{ .schedule | quote }}
   timeZone: "Europe/Berlin"
   concurrencyPolicy: Forbid
   failedJobsHistoryLimit: 1
@@ -18,9 +18,9 @@ spec:
         spec:
           containers:
             - name: app
-              image: {{ .Values.image.app }}:{{ .Values.appVersion }}
+              image: {{ $.Values.image.app }}:{{ $.Values.appVersion }}
               args:
-                - {{ $cronSpec.command }}
+                - {{ .command }}
               resources:
                 limits:
                   cpu: 1000m
@@ -31,15 +31,15 @@ spec:
                 - name: DATABASE_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: {{ .Values.postgres.user }}.{{ .Values.postgres.service }}.credentials.postgresql.acid.zalan.do
+                      name: {{ $.Values.postgres.user }}.{{ $.Values.postgres.service }}.credentials.postgresql.acid.zalan.do
                       key: password
               envFrom:
                 - configMapRef:
-                    name: {{ .Release.Name }}-telegram
+                    name: {{ $.Release.Name }}-telegram
                 - configMapRef:
-                    name: {{ .Release.Name }}-gcp
+                    name: {{ $.Release.Name }}-gcp
                 - configMapRef:
-                    name: {{ .Release.Name }}-db-config
+                    name: {{ $.Release.Name }}-db-config
                 - secretRef:
-                    name: {{ .Release.Name }}-secrets
+                    name: {{ $.Release.Name }}-secrets
 {{- end }}
