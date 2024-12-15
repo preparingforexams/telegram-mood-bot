@@ -22,3 +22,6 @@ crons:
   - schedule: "0 0 * * *"
     command: import-user-groups
     suspend: true
+  - schedule: "0 0 * * *"
+    command: import-results
+    suspend: true

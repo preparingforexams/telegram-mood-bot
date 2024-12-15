@@ -1,11 +1,14 @@
 import asyncio
 import logging
 import sys
+from datetime import UTC, datetime, time, timedelta
+from zoneinfo import ZoneInfo
 
 from bot.bot import MoodBot
 from bot.database import Database
 from bot.dynamo import DynamoClient
 from bot.init import initialize
+from bot.model import Poll
 
 _logger = logging.getLogger(__package__)
 
@@ -47,6 +50,44 @@ async def _import_user_groups(dynamo: DynamoClient, database: Database) -> None:
         await database.close()
 
 
+def _build_poll(*, poll_id: str, group_id: int, answer_time: datetime) -> Poll:
+    if answer_time.hour != 0:
+        raise ValueError(f"Unexcected answer time: {answer_time}")
+
+    tz = ZoneInfo("Europe/Berlin")
+    date = answer_time.date()
+    creation_time = datetime.combine(date, time(13), tzinfo=tz)
+    close_time = datetime.combine(date + timedelta(days=1), time(1), tzinfo=UTC)
+    return Poll(
+        id=poll_id,
+        group_id=group_id,
+        message_id=0,
+        creation_time=creation_time,
+        close_time=close_time,
+    )
+
+
+async def _import_results(dynamo: DynamoClient, database: Database) -> None:
+    await database.open()
+    try:
+        poll_ids = set()
+        async for imported in dynamo.list_answers():
+            answer = imported.answer
+            if answer.poll_id not in poll_ids:
+                _logger.info("Inserting new poll %s", answer.poll_id)
+                poll_ids.add(answer.poll_id)
+                poll = _build_poll(
+                    poll_id=answer.poll_id,
+                    group_id=imported.group_id,
+                    answer_time=answer.time,
+                )
+                await database.insert_poll(poll)
+
+            await database.upsert_answer(answer)
+    finally:
+        await database.close()
+
+
 def main() -> None:
     config, database = initialize()
 
@@ -73,6 +114,9 @@ def main() -> None:
         case "import-user-groups":
             _logger.info("Importing user groups")
             asyncio.run(_import_user_groups(DynamoClient(config.aws), database))
+        case "import-results":
+            _logger.info("Importing results")
+            asyncio.run(_import_results(DynamoClient(config.aws), database))
         case other:
             _logger.error("Unknown operation mode: %s", other)
             sys.exit(1)
