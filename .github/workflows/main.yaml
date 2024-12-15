@@ -59,4 +59,10 @@ jobs:
   clean:
     concurrency: cleanup
     needs: [ deploy ]
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [ app, migrations ]
     uses: preparingforexams/actions-container/.github/workflows/clean.yml@v5
+    with:
+      image-name: telegram-mood-bot/${{ matrix.variant }}
