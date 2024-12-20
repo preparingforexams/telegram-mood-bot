@@ -13,6 +13,7 @@ from telegram.ext import (
 
 from bot.config import TelegramConfig
 from bot.database import Database
+from bot.meme import Meme, MemeKind, get_meme
 from bot.model import Poll, PollAnswer, PollOption, User
 
 _logger = logging.getLogger(__name__)
@@ -84,8 +85,10 @@ class MoodBot:
 
         now = self._now()
         day_of_week = self._get_day_description(now)
+        meme = get_meme(now)
 
-        # TODO: meme
+        if meme is not None:
+            await self._send_meme(chat_id, meme)
 
         message = await self.bot.send_poll(
             chat_id=chat_id,
@@ -118,3 +121,26 @@ class MoodBot:
         self.app.run_polling(
             stop_signals=[signal.SIGINT, signal.SIGTERM],
         )
+
+    async def _send_meme(self, chat_id: int, meme: Meme) -> None:
+        bot = self.bot
+        file_id = meme.file_id
+        match meme.kind:
+            case MemeKind.photo:
+                await bot.send_photo(
+                    chat_id=chat_id,
+                    photo=file_id,
+                    disable_notification=True,
+                )
+            case MemeKind.video:
+                await bot.send_video(
+                    chat_id=chat_id,
+                    video=file_id,
+                    disable_notification=True,
+                )
+            case MemeKind.animation:
+                await bot.send_animation(
+                    chat_id=chat_id,
+                    animation=file_id,
+                    disable_notification=True,
+                )
