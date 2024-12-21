@@ -28,7 +28,7 @@ class Meme:
 
 def get_meme(at_time: datetime) -> Meme | None:
     day_of_week = _DayOfWeek(at_time.weekday())
-    candidates = _MEMES_BY_DAY[day_of_week]
+    candidates = _MEMES_BY_DAY.get(day_of_week)
     if not candidates:
         return None
     return random.choice(candidates)
