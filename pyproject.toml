@@ -13,7 +13,7 @@ dependencies = [
     "asyncpg ==0.30.*",
     "bs-config [dotenv] ==1.1.1",
     "httpx ==0.28.*",
-    "python-telegram-bot ==21.9",
+    "python-telegram-bot ==21.10",
     "sentry-sdk >=2, <3",
 ]
 
