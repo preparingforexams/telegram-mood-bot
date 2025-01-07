@@ -39,6 +39,7 @@ jobs:
     uses: preparingforexams/actions-container/.github/workflows/build-dual-image-kaniko.yml@v5
     with:
       context: ${{ matrix.context }}
+      digest-artifact-name: digests-${{ matrix.image-variant }}
       image-name: telegram-mood-bot/${{ matrix.image-variant }}
       push-image: ${{ github.ref_name == github.event.repository.default_branch }}
 
