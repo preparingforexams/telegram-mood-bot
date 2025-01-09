@@ -35,7 +35,7 @@ spec:
             capabilities:
               drop: [ ALL ]
           envFrom:
-            - configMapRef:
+            - secretRef:
                 name: {{ .Release.Name }}-db
           env:
             - name: FLYWAY_URL
