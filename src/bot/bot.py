@@ -5,7 +5,9 @@ from typing import cast
 from zoneinfo import ZoneInfo
 
 import telegram
+from asyncpg import PostgresError
 from telegram.ext import (
+    Application,
     ApplicationBuilder,
     ContextTypes,
     PollAnswerHandler,
@@ -30,7 +32,7 @@ class MoodBot:
         app = (
             ApplicationBuilder()
             .token(self.config.token)
-            .post_init(lambda _: self.initialize())
+            .post_init(self.initialize)
             .post_shutdown(lambda _: self.close())
             .build()
         )
@@ -39,8 +41,13 @@ class MoodBot:
         self.app = app
         self.bot: telegram.Bot = app.bot
 
-    async def initialize(self) -> None:
-        await self.db.open()
+    async def initialize(self, application: Application | None = None) -> None:
+        try:
+            await self.db.open()
+        except PostgresError as e:
+            _logger.error("Could not open database connection", exc_info=e)
+            if application is not None:
+                application.stop_running()
 
     async def close(self) -> None:
         await self.db.close()
