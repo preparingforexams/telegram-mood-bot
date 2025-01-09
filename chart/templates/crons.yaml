@@ -7,7 +7,7 @@ metadata:
 spec:
   schedule: {{ .schedule | quote }}
   timeZone: "Europe/Berlin"
-  suspend: {{ default false .suspend }}
+  suspend: {{ default true .suspend }}
   concurrencyPolicy: Forbid
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 1
@@ -46,7 +46,7 @@ spec:
               envFrom:
                 - configMapRef:
                     name: {{ $.Release.Name }}-base
-                - configMapRef:
+                - secretRef:
                     name: {{ $.Release.Name }}-db
                 - secretRef:
                     name: {{ $.Release.Name }}-secrets

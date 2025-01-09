@@ -12,7 +12,7 @@ kind: StatefulSet
 metadata:
   name: {{ .Release.Name }}-update-handler
 spec:
-  replicas: 1
+  replicas: 0
   revisionHistoryLimit: 1
   serviceName: {{ .Release.Name }}-update-handler
   selector:
@@ -43,10 +43,7 @@ spec:
             - name: FLYWAY_USER
               value: $(DATABASE_USERNAME)
             - name: FLYWAY_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.postgres.user }}.{{ .Values.postgres.service }}.credentials.postgresql.acid.zalan.do
-                  key: password
+              value: $(DATABASE_PASSWORD)
       containers:
         - name: app
           image: {{ .Values.image.app }}:{{ .Values.appVersion }}
@@ -71,7 +68,7 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ .Release.Name }}-base
-            - configMapRef:
+            - secretRef:
                 name: {{ .Release.Name }}-db
             - secretRef:
                 name: {{ .Release.Name }}-secrets
