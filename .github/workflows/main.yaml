@@ -36,7 +36,7 @@ jobs:
             image-variant: app
           - context: migrations
             image-variant: migrations
-    uses: preparingforexams/actions-container/.github/workflows/build-dual-image-kaniko.yml@v5
+    uses: preparingforexams/actions-container/.github/workflows/build-dual-image-kaniko.yml@v6
     with:
       context: ${{ matrix.context }}
       digest-artifact-name: digests-${{ matrix.image-variant }}
@@ -70,6 +70,6 @@ jobs:
       matrix:
         variant: [ app, migrations ]
     concurrency: cleanup-${{ matrix.variant}}
-    uses: preparingforexams/actions-container/.github/workflows/clean.yml@v5
+    uses: preparingforexams/actions-container/.github/workflows/clean.yml@v6
     with:
       image-name: telegram-mood-bot/${{ matrix.variant }}
