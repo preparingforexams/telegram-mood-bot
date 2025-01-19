@@ -37,12 +37,6 @@ spec:
                 allowPrivilegeEscalation: false
                 capabilities:
                   drop: [ ALL ]
-              env:
-                - name: DATABASE_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: {{ $.Values.postgres.user }}.{{ $.Values.postgres.service }}.credentials.postgresql.acid.zalan.do
-                      key: password
               envFrom:
                 - configMapRef:
                     name: {{ $.Release.Name }}-base
