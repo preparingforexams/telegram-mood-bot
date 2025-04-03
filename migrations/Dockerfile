@@ -1,4 +1,4 @@
-FROM flyway/flyway:11.5
+FROM flyway/flyway:11.6
 
 RUN groupadd --system --gid 500 app \
   && useradd --system --uid 500 --gid app --no-create-home app
