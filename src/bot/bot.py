@@ -117,6 +117,11 @@ class MoodBot:
     async def close_open_polls(self) -> None:
         close_time = self._now()
         async for poll in self.db.get_open_polls():
+            creation_time = poll.creation_time.astimezone(self.timezone)
+            if creation_time.date() == close_time.date():
+                _logger.debug("Skipping poll %s from today", poll.id)
+                continue
+
             _logger.debug("Closing poll %s in group %d", poll.id, poll.group_id)
             await self.bot.stop_poll(
                 chat_id=poll.group_id,
