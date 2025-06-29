@@ -28,6 +28,7 @@ jobs:
     needs:
       - lint
       - test
+    name: Build ${{ matrix.image-variant }} image
     strategy:
       fail-fast: false
       matrix:
@@ -36,7 +37,7 @@ jobs:
             image-variant: app
           - context: migrations
             image-variant: migrations
-    uses: preparingforexams/actions-container/.github/workflows/build-dual-image-kaniko.yml@v7
+    uses: preparingforexams/actions-container/.github/workflows/build-dual-image-buildah.yml@v7
     with:
       context: ${{ matrix.context }}
       image-name: telegram-mood-bot/${{ matrix.image-variant }}
