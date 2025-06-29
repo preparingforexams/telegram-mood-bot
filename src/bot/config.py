@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Self
 
 from bs_config import Env
+from bs_nats_updater import NatsConfig
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -61,6 +62,7 @@ class DatabaseConfig:
 class Config:
     active_chats: list[int]
     database: DatabaseConfig
+    nats: NatsConfig
     sentry: SentryConfig | None
     telegram: TelegramConfig
 
@@ -69,6 +71,7 @@ class Config:
         return cls(
             active_chats=env.get_int_list("ACTIVE_CHATS", required=True),
             database=DatabaseConfig.from_env(env.scoped("DATABASE_")),
+            nats=NatsConfig.from_env(env.scoped("NATS_")),
             sentry=SentryConfig.from_env(env),
             telegram=TelegramConfig.from_env(env),
         )

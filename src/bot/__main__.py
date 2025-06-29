@@ -28,7 +28,7 @@ async def _close_polls(bot: MoodBot) -> None:
 def main() -> None:
     config, database = initialize()
 
-    bot = MoodBot(config.telegram, database)
+    bot = MoodBot(config.telegram, config.nats, database)
 
     args = sys.argv[1:]
     if len(args) != 1:

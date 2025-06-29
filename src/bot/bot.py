@@ -6,6 +6,7 @@ from zoneinfo import ZoneInfo
 
 import telegram
 from asyncpg import PostgresError
+from bs_nats_updater import NatsConfig, create_updater
 from telegram.ext import (
     Application,
     ApplicationBuilder,
@@ -24,13 +25,19 @@ type Context = ContextTypes.DEFAULT_TYPE
 
 
 class MoodBot:
-    def __init__(self, config: TelegramConfig, database: Database) -> None:
+    def __init__(
+        self,
+        config: TelegramConfig,
+        nats_config: NatsConfig,
+        database: Database,
+    ) -> None:
         self.config = config
         self.db = database
         self.timezone: tzinfo = ZoneInfo(config.timezone_name)
 
         app = (
             ApplicationBuilder()
+            .updater(create_updater(self.config.token, nats_config))
             .token(self.config.token)
             .post_init(self.initialize)
             .post_shutdown(lambda _: self.close())
