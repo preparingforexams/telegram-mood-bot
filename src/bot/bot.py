@@ -12,6 +12,7 @@ from telegram.ext import (
     ApplicationBuilder,
     ContextTypes,
     PollAnswerHandler,
+    Updater,
 )
 
 from bot.config import TelegramConfig
@@ -57,6 +58,9 @@ class MoodBot:
 
     async def close(self) -> None:
         await self.db.close()
+        updater: Updater | None = self.app.updater
+        if updater is not None:
+            await updater.stop()
 
     def _now(self) -> datetime:
         return datetime.now(tz=UTC).astimezone(self.timezone)
