@@ -38,7 +38,6 @@ class MoodBot:
         app = (
             ApplicationBuilder()
             .updater(create_updater(self.config.token, nats_config))
-            .token(self.config.token)
             .post_init(self.initialize)
             .post_shutdown(lambda _: self.close())
             .build()
