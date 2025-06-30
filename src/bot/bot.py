@@ -59,7 +59,7 @@ class MoodBot:
     async def close(self) -> None:
         await self.db.close()
         updater: Updater | None = self.app.updater
-        if updater is not None:
+        if updater is not None and updater.running:
             await updater.stop()
 
     def _now(self) -> datetime:
