@@ -14,7 +14,7 @@ dependencies = [
     "bs-config [dotenv] ==1.1.1",
     "bs-nats-updater ==2.0.4",
     "httpx ==0.28.*",
-    "python-telegram-bot ==22.2",
+    "python-telegram-bot ==22.3",
     "sentry-sdk >=2, <3",
 ]
 
