@@ -11,8 +11,10 @@ from telegram.ext import (
     Application,
     ApplicationBuilder,
     ContextTypes,
+    MessageHandler,
     PollAnswerHandler,
     Updater,
+    filters,
 )
 
 from bot.config import TelegramConfig
@@ -44,6 +46,12 @@ class MoodBot:
             .build()
         )
         app.add_handler(PollAnswerHandler(self._on_poll_answer))
+        app.add_handler(
+            MessageHandler(
+                filters=filters.PHOTO | filters.VIDEO | filters.ANIMATION,
+                callback=self._on_message,
+            )
+        )
 
         self.app = app
         self.bot: telegram.Bot = app.bot
@@ -64,6 +72,21 @@ class MoodBot:
 
     def _now(self) -> datetime:
         return datetime.now(tz=UTC).astimezone(self.timezone)
+
+    async def _on_message(self, update: telegram.Update, _: Context) -> None:
+        message = update.message
+        if message is None:
+            return
+
+        if photos := message.photo:
+            largest = max(photos, key=lambda p: p.file_size or 0)
+            _logger.info("Received photo with file_id %s", largest.file_id)
+
+        if video := message.video:
+            _logger.info("Received video with file_id %s", video.file_id)
+
+        if animation := message.animation:
+            _logger.info("Received animation with file_id %s", animation.file_id)
 
     @staticmethod
     def _get_day_description(at_time: datetime) -> str:
