@@ -72,4 +72,10 @@ _MEMES_BY_DAY = {
             file_id="BAACAgIAAxkBAAM8YE0YG3NVgZdCH__27kNYL4DTj5MAAnsLAAIFyWhKhR8KzjuNll4eBA",
         ),
     ],
+    _DayOfWeek.Sunday: [
+        Meme(
+            kind=MemeKind.photo,
+            file_id="AgACAgIAAxkBAANNaINuPaTrEVWJQxJyDiwdluPp4ikAAh3-MRsNR1FLHbovMdCNO-0BAAMCAAN5AAM2BA",
+        ),
+    ],
 }
