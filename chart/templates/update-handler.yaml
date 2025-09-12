@@ -4,7 +4,6 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}-update-handler
 spec:
-  replicas: 1
   revisionHistoryLimit: 0
   selector:
     matchLabels:
@@ -43,9 +42,10 @@ spec:
           resources:
             limits:
               cpu: 1000m
+              memory: 256Mi
             requests:
-              cpu: 10m
-              memory: 128Mi
+              cpu: 500m
+              memory: 256Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -57,4 +57,20 @@ spec:
                 name: {{ .Release.Name }}-db
             - secretRef:
                 name: {{ .Release.Name }}-secrets
-
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ .Release.Name }}-update-handler
+spec:
+  maxReplicaCount: 1
+  minReplicaCount: 0
+  scaleTargetRef:
+    name: {{ .Release.Name }}-update-handler
+  triggers:
+    - type: nats-jetstream
+      metadata:
+        natsServerMonitoringEndpoint: "nats-headless.nats-system.svc.cluster.local:8222"
+        account: "$G"
+        stream: "telegram-updates"
+        consumer: "mood"

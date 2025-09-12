@@ -22,6 +22,23 @@ spec:
             runAsNonRoot: true
             seccompProfile:
               type: RuntimeDefault
+          initContainers:
+            - name: flyway
+              image: {{ $.Values.image.migrations }}:{{ $.Values.appVersion }}
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: [ ALL ]
+              envFrom:
+                - secretRef:
+                    name: {{ $.Release.Name }}-db
+              env:
+                - name: FLYWAY_URL
+                  value: jdbc:postgresql://$(DATABASE_HOST):5432/$(DATABASE_NAME)
+                - name: FLYWAY_USER
+                  value: $(DATABASE_USERNAME)
+                - name: FLYWAY_PASSWORD
+                  value: $(DATABASE_PASSWORD)
           containers:
             - name: app
               image: {{ $.Values.image.app }}:{{ $.Values.appVersion }}
