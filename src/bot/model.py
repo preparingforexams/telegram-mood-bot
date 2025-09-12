@@ -75,7 +75,7 @@ class PollAnswer:
 
     def __str__(self) -> str:
         option = self.option
-        if option:
-            return option.name
-        else:
+        if option is None:
             return "<no answer>"
+        else:
+            return option.name
