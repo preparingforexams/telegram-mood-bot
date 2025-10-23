@@ -11,7 +11,7 @@ classifiers = [
 
 dependencies = [
     "asyncpg ==0.30.*",
-    "bs-config [dotenv] ==1.2.0",
+    "bs-config [dotenv] ==2.0.0",
     "bs-nats-updater ==2.1.2",
     "httpx ==0.28.*",
     "python-telegram-bot ==22.5",
