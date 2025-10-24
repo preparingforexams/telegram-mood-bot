@@ -4,4 +4,4 @@ metadata:
   name: {{ .Release.Name }}-base
 data:
   ACTIVE_CHATS: "{{ join "," .Values.enabledChats }}"
-  TELEGRAM_TIMEZONE: "Europe/Berlin"
+  TELEGRAM__TIMEZONE: "Europe/Berlin"

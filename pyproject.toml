@@ -11,8 +11,8 @@ classifiers = [
 
 dependencies = [
     "asyncpg ==0.30.*",
-    "bs-config [dotenv] ==1.2.0",
-    "bs-nats-updater ==2.1.2",
+    "bs-config [dotenv] ==3.0.0",
+    "bs-nats-updater ==3.0.0",
     "httpx ==0.28.*",
     "python-telegram-bot ==22.5",
     "sentry-sdk >=2, <3",
@@ -37,6 +37,11 @@ bs-nats-updater = { index = "internal" }
 [build-system]
 requires = ["uv_build==0.9.*"]
 build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+]
 
 [[tool.mypy.overrides]]
 module = "asyncpg"

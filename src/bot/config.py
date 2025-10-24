@@ -12,29 +12,27 @@ class SentryConfig:
 
     @classmethod
     def from_env(cls, env: Env) -> Self | None:
-        dsn = env.get_string("SENTRY_DSN")
+        dsn = env.get_string("sentry-dsn")
 
         if not dsn:
             return None
 
         return cls(
             dsn=dsn,
-            release=env.get_string("APP_VERSION", default="debug"),
+            release=env.get_string("app-version", default="debug"),
         )
 
 
 @dataclass(frozen=True, kw_only=True)
 class TelegramConfig:
     token: str
-    target_chat: int
     timezone_name: str
 
     @classmethod
     def from_env(cls, env: Env) -> Self:
         return cls(
-            token=env.get_string("TELEGRAM_TOKEN", required=True),
-            target_chat=env.get_int("TELEGRAM_TARGET_CHAT", default=133399998),
-            timezone_name=env.get_string("TELEGRAM_TIMEZONE", default="Etc/UTC"),
+            token=env.get_string("token", required=True),
+            timezone_name=env.get_string("timezone", default="Etc/UTC"),
         )
 
 
@@ -51,10 +49,10 @@ class DatabaseConfig:
     @classmethod
     def from_env(cls, env: Env) -> Self:
         return cls(
-            host=env.get_string("HOST", default="localhost"),
-            name=env.get_string("NAME", required=True),
-            username=env.get_string("USERNAME", required=True),
-            password=env.get_string("PASSWORD", required=True),
+            host=env.get_string("host", default="localhost"),
+            name=env.get_string("name", required=True),
+            username=env.get_string("username", required=True),
+            password=env.get_string("password", required=True),
         )
 
 
@@ -69,9 +67,9 @@ class Config:
     @classmethod
     def from_env(cls, env: Env) -> Self:
         return cls(
-            active_chats=env.get_int_list("ACTIVE_CHATS", required=True),
-            database=DatabaseConfig.from_env(env.scoped("DATABASE_")),
-            nats=NatsConfig.from_env(env.scoped("NATS_")),
+            active_chats=env.get_int_list("active-chats", required=True),
+            database=DatabaseConfig.from_env(env / "database"),
+            nats=NatsConfig.from_env(env / "nats"),
             sentry=SentryConfig.from_env(env),
-            telegram=TelegramConfig.from_env(env),
+            telegram=TelegramConfig.from_env(env / "telegram"),
         )

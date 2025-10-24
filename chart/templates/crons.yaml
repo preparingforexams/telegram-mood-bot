@@ -34,11 +34,11 @@ spec:
                     name: {{ $.Release.Name }}-db
               env:
                 - name: FLYWAY_URL
-                  value: jdbc:postgresql://$(DATABASE_HOST):5432/$(DATABASE_NAME)
+                  value: jdbc:postgresql://$(DATABASE__HOST):5432/$(DATABASE__NAME)
                 - name: FLYWAY_USER
-                  value: $(DATABASE_USERNAME)
+                  value: $(DATABASE__USERNAME)
                 - name: FLYWAY_PASSWORD
-                  value: $(DATABASE_PASSWORD)
+                  value: $(DATABASE__PASSWORD)
           containers:
             - name: app
               image: {{ $.Values.image.app }}:{{ $.Values.appVersion }}
