@@ -98,7 +98,6 @@ class MoodBot:
         if photos := message.photo:
             largest = max(photos, key=lambda p: p.file_size or 0)
             await _notify_file_id(kind="photo", file_id=largest.file_id)
-            _logger.info("Received photo with file_id %s", largest.file_id)
 
         if video := message.video:
             await _notify_file_id(kind="video", file_id=video.file_id)
@@ -107,7 +106,6 @@ class MoodBot:
             await _notify_file_id(kind="animation", file_id=animation.file_id)
 
         if voice := message.voice:
-            _logger.info("Received voice with file_id %s", voice.file_id)
             await _notify_file_id(kind="voice", file_id=voice.file_id)
 
         if audio := message.audio:
