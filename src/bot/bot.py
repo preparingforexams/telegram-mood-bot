@@ -46,9 +46,16 @@ class MoodBot:
             .build()
         )
         app.add_handler(PollAnswerHandler(self._on_poll_answer))
+        message_filter = (
+            filters.PHOTO
+            | filters.VIDEO
+            | filters.ANIMATION
+            | filters.AUDIO
+            | filters.VOICE
+        )
         app.add_handler(
             MessageHandler(
-                filters=filters.PHOTO | filters.VIDEO | filters.ANIMATION,
+                filters=message_filter,
                 callback=self._on_message,
             )
         )
@@ -87,6 +94,12 @@ class MoodBot:
 
         if animation := message.animation:
             _logger.info("Received animation with file_id %s", animation.file_id)
+
+        if voice := message.voice:
+            _logger.info("Received voice with file_id %s", voice.file_id)
+
+        if audio := message.audio:
+            _logger.info("Received voice with file_id %s", audio.file_id)
 
     @staticmethod
     def _get_day_description(at_time: datetime) -> str:
