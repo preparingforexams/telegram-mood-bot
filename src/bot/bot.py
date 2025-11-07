@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 import telegram
 from asyncpg import PostgresError
 from bs_nats_updater import NatsConfig, create_updater
+from telegram.constants import ChatType, ParseMode
 from telegram.ext import (
     Application,
     ApplicationBuilder,
@@ -85,21 +86,32 @@ class MoodBot:
         if message is None:
             return
 
+        async def _notify_file_id(*, kind: str, file_id: str) -> None:
+            if message.chat.type == ChatType.PRIVATE:
+                await message.reply_text(
+                    f"File ID of {kind} is `{file_id}`",
+                    parse_mode=ParseMode.MARKDOWN_V2,
+                )
+            else:
+                _logger.info("Received %s with file_id %s", kind, file_id)
+
         if photos := message.photo:
             largest = max(photos, key=lambda p: p.file_size or 0)
+            await _notify_file_id(kind="photo", file_id=largest.file_id)
             _logger.info("Received photo with file_id %s", largest.file_id)
 
         if video := message.video:
-            _logger.info("Received video with file_id %s", video.file_id)
+            await _notify_file_id(kind="video", file_id=video.file_id)
 
         if animation := message.animation:
-            _logger.info("Received animation with file_id %s", animation.file_id)
+            await _notify_file_id(kind="animation", file_id=animation.file_id)
 
         if voice := message.voice:
             _logger.info("Received voice with file_id %s", voice.file_id)
+            await _notify_file_id(kind="voice", file_id=voice.file_id)
 
         if audio := message.audio:
-            _logger.info("Received voice with file_id %s", audio.file_id)
+            await _notify_file_id(kind="audio", file_id=audio.file_id)
 
     @staticmethod
     def _get_day_description(at_time: datetime) -> str:
