@@ -18,6 +18,7 @@ class MemeKind(Enum):
     photo = auto()
     video = auto()
     animation = auto()
+    audio = auto()
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -68,9 +69,13 @@ _MEMES_BY_DAY = {
     ],
     _DayOfWeek.Friday: [
         Meme(
-            kind=MemeKind.video,
-            file_id="BAACAgIAAxkBAAM8YE0YG3NVgZdCH__27kNYL4DTj5MAAnsLAAIFyWhKhR8KzjuNll4eBA",
+            kind=MemeKind.audio,
+            file_id="CQACAgIAAxkBAANRaQ2zVK8YzUJDFq_2IKN_p3EuSFsAAimAAALhXnBIbWWDb2jRRIE2BA",
         ),
+        # Meme(
+        #     kind=MemeKind.video,
+        #     file_id="BAACAgIAAxkBAAM8YE0YG3NVgZdCH__27kNYL4DTj5MAAnsLAAIFyWhKhR8KzjuNll4eBA",
+        # ),
     ],
     _DayOfWeek.Sunday: [
         Meme(

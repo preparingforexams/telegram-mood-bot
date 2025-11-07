@@ -110,6 +110,9 @@ class MoodBot:
 
         if audio := message.audio:
             await _notify_file_id(kind="audio", file_id=audio.file_id)
+            await message.chat.send_voice(
+                voice=audio.file_id,
+            )
 
     @staticmethod
     def _get_day_description(at_time: datetime) -> str:
@@ -211,4 +214,9 @@ class MoodBot:
                     chat_id=chat_id,
                     animation=file_id,
                     disable_notification=True,
+                )
+            case MemeKind.audio:
+                await bot.send_voice(
+                    chat_id=chat_id,
+                    voice=file_id,
                 )
