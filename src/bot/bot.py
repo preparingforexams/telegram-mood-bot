@@ -1,8 +1,6 @@
 import logging
 import signal
-from contextlib import suppress
 from datetime import UTC, datetime, tzinfo
-from io import BytesIO
 from typing import cast
 from zoneinfo import ZoneInfo
 
@@ -112,23 +110,6 @@ class MoodBot:
 
         if audio := message.audio:
             await _notify_file_id(kind="audio", file_id=audio.file_id)
-            await message.chat.send_audio(
-                audio=audio.file_id,
-                title="TGIF",
-            )
-            with suppress(Exception):
-                await message.chat.send_audio(
-                    audio=audio.file_id,
-                    title="",
-                )
-            f = await audio.get_file()
-            f_content = BytesIO()
-            await f.download_to_memory(f_content)
-            f_content.seek(0)
-            m = await message.chat.send_voice(f_content)
-            m_voice = m.voice
-            if m_voice:
-                await m.reply_text(f"File ID: {m_voice.file_id}")
 
     @staticmethod
     def _get_day_description(at_time: datetime) -> str:

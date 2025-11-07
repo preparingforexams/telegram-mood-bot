@@ -70,7 +70,7 @@ _MEMES_BY_DAY = {
     _DayOfWeek.Friday: [
         Meme(
             kind=MemeKind.audio,
-            file_id="CQACAgIAAxkBAANRaQ2zVK8YzUJDFq_2IKN_p3EuSFsAAimAAALhXnBIbWWDb2jRRIE2BA",
+            file_id="AwACAgIAAxkDAANeaQ23Qi7fZEBTFNwHgW_IVbk4olIAAlOAAALhXnBIApVGoujSZ882BA",
         ),
         # Meme(
         #     kind=MemeKind.video,
