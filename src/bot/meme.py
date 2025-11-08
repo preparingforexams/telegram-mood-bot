@@ -72,10 +72,10 @@ _MEMES_BY_DAY = {
             kind=MemeKind.audio,
             file_id="AwACAgIAAxkDAANeaQ23Qi7fZEBTFNwHgW_IVbk4olIAAlOAAALhXnBIApVGoujSZ882BA",
         ),
-        # Meme(
-        #     kind=MemeKind.video,
-        #     file_id="BAACAgIAAxkBAAM8YE0YG3NVgZdCH__27kNYL4DTj5MAAnsLAAIFyWhKhR8KzjuNll4eBA",
-        # ),
+        Meme(
+            kind=MemeKind.video,
+            file_id="BAACAgIAAxkBAAM8YE0YG3NVgZdCH__27kNYL4DTj5MAAnsLAAIFyWhKhR8KzjuNll4eBA",
+        ),
     ],
     _DayOfWeek.Sunday: [
         Meme(
