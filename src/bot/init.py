@@ -1,11 +1,14 @@
 import logging
+from typing import TYPE_CHECKING
 
 import sentry_sdk
 from bs_config import Env
 
 from bot.config import Config, DatabaseConfig, SentryConfig
-from bot.database import Database
 from bot.database_pg import PostgresDatabase
+
+if TYPE_CHECKING:
+    from bot.database import Database
 
 _LOG = logging.getLogger(__name__)
 
