@@ -1,7 +1,7 @@
 import logging
 import signal
 from datetime import UTC, datetime, tzinfo
-from typing import cast
+from typing import TYPE_CHECKING, cast
 from zoneinfo import ZoneInfo
 
 import telegram
@@ -18,10 +18,12 @@ from telegram.ext import (
     filters,
 )
 
-from bot.config import TelegramConfig
-from bot.database import Database
 from bot.meme import Meme, MemeKind, get_meme
 from bot.model import Poll, PollAnswer, PollOption, User
+
+if TYPE_CHECKING:
+    from bot.config import TelegramConfig
+    from bot.database import Database
 
 _logger = logging.getLogger(__name__)
 

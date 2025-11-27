@@ -1,13 +1,16 @@
 import logging
-from collections.abc import AsyncIterable
-from datetime import datetime
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 import asyncpg
 
-from bot.config import DatabaseConfig
 from bot.database import Database, NotFoundException, OperationalException
 from bot.model import Poll, PollAnswer, User
+
+if TYPE_CHECKING:
+    from collections.abc import AsyncIterable
+    from datetime import datetime
+
+    from bot.config import DatabaseConfig
 
 _logger = logging.getLogger(__name__)
 

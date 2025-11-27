@@ -1,8 +1,11 @@
 import abc
-from collections.abc import AsyncIterable
-from datetime import datetime
+from typing import TYPE_CHECKING
 
-from bot.model import Poll, PollAnswer, User
+if TYPE_CHECKING:
+    from collections.abc import AsyncIterable
+    from datetime import datetime
+
+    from bot.model import Poll, PollAnswer, User
 
 
 class DatabaseException(abc.ABC, Exception):

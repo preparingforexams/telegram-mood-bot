@@ -1,7 +1,10 @@
 import random
 from dataclasses import dataclass
-from datetime import datetime
 from enum import Enum, auto
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from datetime import datetime
 
 
 class _DayOfWeek(Enum):
