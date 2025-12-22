@@ -1,4 +1,4 @@
-FROM docker.io/flyway/flyway:11.19
+FROM docker.io/flyway/flyway:11.20
 
 RUN groupadd --system --gid 500 app \
   && useradd --system --uid 500 --gid app --no-create-home app
